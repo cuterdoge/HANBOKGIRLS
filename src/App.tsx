@@ -105,21 +105,12 @@ const messages = {
     demoWarning: 'Demo only · No payment will be collected, and no SMS will be sent.',
     reminders: 'In the live service, text reminders can be sent 30 and 10 minutes before your session ends.',
     confirmedTitle: 'Your Seoul moment is on the calendar!',
-    confirmedText: 'Your demo booking is saved in this browser. Show this QR to preview staff check-in.',
+    confirmedText: 'Your demo booking is saved in this browser. Keep your booking code for reference.',
     bookingCode: 'BOOKING CODE',
     amountPaid: 'Demo amount selected',
-    qrTitle: 'Your check-in QR',
-    qrHelp: 'For this demo, staff lookup works only in the same browser where the booking was made.',
-    staffPreview: 'Preview staff check-in',
+    qrTitle: 'Your booking QR',
+    qrHelp: 'This demo QR contains only your booking code; it is not connected to a live check-in service.',
     startOver: 'Back to home',
-    staffTitle: 'Guest check-in',
-    staffDemo: 'STAFF PREVIEW · DEMO DATA',
-    bookingNotFound: 'This booking is not saved in this browser. Scan the QR on the device used to create the demo booking.',
-    contactHeading: 'Contact',
-    selectedLooks: 'Selected looks',
-    paymentStatus: 'Payment status',
-    demoDeposit: 'Deposit selected (demo only)',
-    demoFull: 'Full payment selected (demo only)',
     storageError: 'The demo booking data could not be read or saved in this browser. Check browser storage and try again.',
     capacityError: 'That time just filled up. Please choose another available start time.',
     dateError: 'Please choose a valid visit date that is today or later.',
@@ -214,21 +205,12 @@ const messages = {
     demoWarning: '데모 전용 · 실제 결제나 문자는 전송되지 않습니다.',
     reminders: '실제 서비스에서는 이용 종료 30분 전과 10분 전에 문자 알림을 보낼 수 있어요.',
     confirmedTitle: '서울에서의 특별한 하루를 예약했어요!',
-    confirmedText: '데모 예약이 이 브라우저에 저장됐어요. 아래 QR로 직원 체크인을 미리 확인해 보세요.',
+    confirmedText: '데모 예약이 이 브라우저에 저장됐어요. 예약 번호를 확인용으로 보관해 주세요.',
     bookingCode: '예약 번호',
     amountPaid: '데모 결제 선택 금액',
-    qrTitle: '체크인 QR',
-    qrHelp: '데모 직원 조회는 예약을 만든 브라우저에서만 이용할 수 있어요.',
-    staffPreview: '직원 체크인 미리보기',
+    qrTitle: '예약 번호 QR',
+    qrHelp: '이 데모 QR에는 예약 번호만 포함되어 있으며 실제 체크인 서비스와 연결되어 있지 않아요.',
     startOver: '홈으로 돌아가기',
-    staffTitle: '방문객 체크인',
-    staffDemo: '직원 미리보기 · 데모 정보',
-    bookingNotFound: '이 브라우저에 저장된 예약이 없어요. 데모 예약을 만든 기기에서 QR을 확인해 주세요.',
-    contactHeading: '연락처',
-    selectedLooks: '선택한 스타일',
-    paymentStatus: '결제 상태',
-    demoDeposit: '예약금 선택 (데모 전용)',
-    demoFull: '전액 결제 선택 (데모 전용)',
     storageError: '이 브라우저에서 데모 예약 정보를 읽거나 저장할 수 없어요. 브라우저 저장 공간을 확인해 주세요.',
     capacityError: '방금 예약이 마감됐어요. 다른 시작 시간을 선택해 주세요.',
     dateError: '오늘 이후의 올바른 방문 날짜를 선택해 주세요.',
@@ -296,10 +278,7 @@ function App() {
   const [storageError, setStorageError] = useState(false)
   const [formError, setFormError] = useState('')
   const [currentBooking, setCurrentBooking] = useState<BookingRecord | null>(null)
-  const queryStaffId = new URLSearchParams(window.location.search).get('staff')
-  const [staffId, setStaffId] = useState<string | null>(queryStaffId)
   const t = messages[language]
-  const isStaffMode = staffId !== null
 
   useEffect(() => {
     const refresh = () => {
@@ -324,7 +303,6 @@ function App() {
   )
   const total = guests.reduce((sum, guest) => sum + getGuestPrice(guest), 0)
   const payment = getPaymentAmounts(total, paymentType)
-  const staffBooking = bookings.find((booking) => booking.id === staffId) ?? null
   const durationMinutes = DURATIONS[duration]
 
   useEffect(() => {
@@ -359,7 +337,6 @@ function App() {
 
   function navigateHome(sectionId?: string) {
     setPage('home')
-    setStaffId(null)
     window.history.replaceState(
       {},
       '',
@@ -471,17 +448,6 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function openStaffPreview(id: string) {
-    setStaffId(id)
-    window.history.pushState({}, '', `${window.location.pathname}?staff=${encodeURIComponent(id)}`)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  function closeStaffPreview() {
-    setStaffId(null)
-    window.history.replaceState({}, '', window.location.pathname)
-  }
-
   function renderHeader() {
     return (
       <header className="site-header">
@@ -516,7 +482,7 @@ function App() {
             <span aria-hidden="true">/</span>
             <button type="button" aria-pressed={language === 'ko'} onClick={() => setLanguage('ko')}>한국어</button>
           </div>
-          {!isStaffMode && page !== 'confirmation' && (
+          {page !== 'confirmation' && (
             <button className="button button-small button-plum" type="button" onClick={beginBooking}>
               {t.bookNow}
             </button>
@@ -857,7 +823,7 @@ function App() {
 
   function renderConfirmation() {
     if (!currentBooking) return renderHome()
-    const qrValue = `${window.location.origin}${window.location.pathname}?staff=${encodeURIComponent(currentBooking.id)}`
+    const qrValue = currentBooking.id
     const paid = getPaymentAmounts(currentBooking.total, currentBooking.paymentType)
     return (
       <main className="confirmation-page">
@@ -880,58 +846,8 @@ function App() {
           </div>
           <div className="reminder-note"><span>♡</span><p>{t.reminders}</p></div>
           <div className="confirmation-actions">
-            <button className="button button-plum" type="button" onClick={() => openStaffPreview(currentBooking.id)}>{t.staffPreview}</button>
-            <button className="button button-outline" type="button" onClick={() => { setPage('home'); setStaffId(null) }}>{t.startOver}</button>
+            <button className="button button-outline" type="button" onClick={() => setPage('home')}>{t.startOver}</button>
           </div>
-        </div>
-      </main>
-    )
-  }
-
-  function renderStaff() {
-    if (!staffBooking) {
-      return (
-        <main className="staff-page">
-          <div className="staff-card">
-            <p className="eyebrow">{t.staffDemo}</p>
-            <h1>{t.staffTitle}</h1>
-            <p>{t.bookingNotFound}</p>
-            <button className="button button-outline" type="button" onClick={closeStaffPreview}>{t.startOver}</button>
-          </div>
-        </main>
-      )
-    }
-    return (
-      <main className="staff-page">
-        <div className="staff-card">
-          <p className="eyebrow">{t.staffDemo}</p>
-          <h1>{t.staffTitle}</h1>
-          <p className="staff-code">{staffBooking.id}</p>
-          <div className="staff-details">
-            <div><span>{t.summaryDate}</span><strong>{displayDate(staffBooking.date, language)}</strong></div>
-            <div><span>{t.summaryTime}</span><strong>{formatTime(staffBooking.startMin)}</strong></div>
-            <div><span>{t.summaryDuration}</span><strong>{t.durations[staffBooking.duration].duration}</strong></div>
-            <div><span>{t.summaryGuests}</span><strong>{staffBooking.guests.length}</strong></div>
-            <div><span>{t.contactHeading}</span><strong>{staffBooking.contact.name}</strong><small>{staffBooking.contact.phone} · {staffBooking.contact.email}</small></div>
-            <div><span>{t.paymentStatus}</span><strong>{staffBooking.paymentType === 'deposit' ? t.demoDeposit : t.demoFull}</strong></div>
-          </div>
-          <h2>{t.selectedLooks}</h2>
-          <ul className="staff-guest-list">
-            {staffBooking.guests.map((guest, index) => {
-              const hanbok = HANBOK_OPTIONS.find((option) => option.id === guest.hanbokId)
-              const hair = HAIRSTYLES.find((style) => style.id === guest.hairstyleId)
-              return (
-                <li key={`${staffBooking.id}-${index}`}>
-                  <strong>{t.guest} {index + 1} · {language === 'ko' ? hanbok?.nameKo : hanbok?.nameEn}</strong>
-                  <span>{language === 'ko' ? hair?.nameKo : hair?.nameEn}{guest.makeup ? ` · ${t.makeupTitle}` : ''}{guest.shoes ? ` · ${t.shoesTitle} ${guest.shoeSize} mm` : ''}{guest.bag ? ` · ${t.bagTitle}` : ''}</span>
-                  <small>{money(getGuestPrice(guest))}</small>
-                </li>
-              )
-            })}
-          </ul>
-          <div className="staff-total"><span>{t.summaryTotal}</span><strong>{money(staffBooking.total)}</strong></div>
-          <p className="demo-banner">{t.qrHelp}</p>
-          <button className="button button-outline" type="button" onClick={closeStaffPreview}>{t.startOver}</button>
         </div>
       </main>
     )
@@ -941,7 +857,7 @@ function App() {
     <div className="app-shell">
       {renderHeader()}
       {storageError && <div className="storage-alert" role="alert">{t.storageError}</div>}
-      {isStaffMode ? renderStaff() : page === 'home' ? renderHome() : page === 'booking' ? renderBooking() : renderConfirmation()}
+      {page === 'home' ? renderHome() : page === 'booking' ? renderBooking() : renderConfirmation()}
     </div>
   )
 }

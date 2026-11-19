@@ -181,8 +181,7 @@
 
 .hero-copy h1,
 .booking-heading h1,
-.confirmation-card h1,
-.staff-card h1 {
+.confirmation-card h1 {
   color: var(--plum);
   font-family: var(--serif);
   font-size: clamp(47px, 6vw, 78px);
@@ -1260,8 +1259,7 @@
   margin: 13px 0 0;
 }
 
-.confirmation-page,
-.staff-page {
+.confirmation-page {
   background:
     radial-gradient(ellipse at 50% 7%, rgba(227, 215, 194, 0.38), transparent 40%),
     #fcfaf5;
@@ -1269,8 +1267,7 @@
   padding: 48px 20px 80px;
 }
 
-.confirmation-card,
-.staff-card {
+.confirmation-card {
   background: #fffefa;
   border: 1px solid var(--line);
   margin: 0 auto;
@@ -1289,13 +1286,11 @@
   margin-bottom: 9px;
 }
 
-.confirmation-card h1,
-.staff-card h1 {
+.confirmation-card h1 {
   font-size: clamp(34px, 4.5vw, 48px);
 }
 
-.confirmation-lead,
-.staff-card > p:not(.eyebrow, .staff-code) {
+.confirmation-lead {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.75;
@@ -1313,21 +1308,18 @@
   text-align: left;
 }
 
-.confirmation-details div,
-.staff-details > div {
+.confirmation-details div {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.confirmation-details span,
-.staff-details span {
+.confirmation-details span {
   color: var(--muted);
   font-size: 9px;
 }
 
-.confirmation-details strong,
-.staff-details strong {
+.confirmation-details strong {
   color: var(--ink);
   font-size: 11px;
   line-height: 1.5;
@@ -1386,107 +1378,12 @@
   margin-top: 22px;
 }
 
-.staff-page {
-  padding-top: 56px;
-}
-
-.staff-card {
-  max-width: 620px;
-  text-align: left;
-}
-
-.staff-card > .eyebrow,
-.staff-card > h1,
-.staff-code {
-  text-align: center;
-}
-
-.staff-code {
-  color: var(--moss);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  margin: 10px 0 24px;
-}
-
-.staff-details {
-  border-bottom: 1px solid var(--line);
-  border-top: 1px solid var(--line);
-  display: grid;
-  gap: 18px;
-  grid-template-columns: 1fr 1fr;
-  padding: 20px 0;
-}
-
-.staff-details small {
-  color: var(--muted);
-  font-size: 10px;
-  overflow-wrap: anywhere;
-}
-
-.staff-card h2 {
-  color: var(--plum);
-  font-family: var(--serif);
-  font-size: 21px;
-  font-weight: 500;
-  margin: 23px 0 10px;
-}
-
-.staff-guest-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.staff-guest-list li {
-  border: 1px solid var(--line);
-  display: grid;
-  gap: 5px;
-  margin-top: 7px;
-  padding: 12px;
-}
-
-.staff-guest-list strong {
-  color: var(--plum);
-  font-size: 11px;
-}
-
-.staff-guest-list span,
-.staff-guest-list small {
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-.staff-guest-list small {
-  color: var(--ink);
-}
-
-.staff-total {
-  align-items: center;
-  color: var(--ink);
-  display: flex;
-  font-size: 12px;
-  justify-content: space-between;
-  padding: 17px 0;
-}
-
-.staff-total strong {
-  color: var(--plum);
-  font-size: 18px;
-}
-
-.demo-banner,
 .storage-alert {
   background: #f4f2e9;
   color: var(--muted);
   font-size: 10px;
   line-height: 1.6;
   padding: 12px 15px;
-}
-
-.staff-card > .button {
-  margin-top: 13px;
 }
 
 .storage-alert {
@@ -1789,14 +1686,12 @@
     grid-column: auto;
   }
 
-  .confirmation-page,
-  .staff-page {
+  .confirmation-page {
     min-height: calc(100vh - 72px);
     padding: 25px 13px 50px;
   }
 
-  .confirmation-card,
-  .staff-card {
+  .confirmation-card {
     padding: 24px 18px;
   }
 
