@@ -60,7 +60,7 @@ describe('booking price calculations', () => {
     guest.shoes = true
     guest.bag = true
 
-    expect(getGuestPrice(guest)).toBe(50000 + 15000 + 20000 + 150000)
+    expect(getGuestPrice(guest)).toBe(50000 + 15000 + 20000 + 15000)
   })
 
   it('calculates the 20 percent deposit and remaining amount', () => {

@@ -156,7 +156,7 @@ export function getGuestPrice(guest: GuestSelection): number {
     (hanbok?.price ?? 0) +
     (hairstyle?.price ?? 0) +
     (guest.makeup ? 20000 : 0) +
-    (guest.shoes ? 150000 : 0)
+    (guest.shoes ? 15000 : 0)
   )
 }
 

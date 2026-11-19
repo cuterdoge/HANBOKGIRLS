@@ -756,7 +756,7 @@ function App() {
                           <div className="shoe-option">
                             <label className="checkbox-option">
                               <input type="checkbox" checked={guest.shoes} onChange={(event) => setGuests((current) => updateGuest(current, index, { shoes: event.target.checked, shoeSize: event.target.checked ? guest.shoeSize : '' }))} />
-                              <span><strong>{t.shoesTitle}</strong><small>{t.addShoes} · {money(150000)}</small></span>
+                              <span><strong>{t.shoesTitle}</strong><small>{t.addShoes} · {money(15000)}</small></span>
                             </label>
                             {guest.shoes && (
                               <label className="form-field shoe-size-field">
