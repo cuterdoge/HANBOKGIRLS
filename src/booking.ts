@@ -39,6 +39,15 @@ export type HanbokOption = {
   imageUrl?: string
 }
 
+export type HairstyleOption = {
+  id: string
+  nameEn: string
+  nameKo: string
+  price: number
+  color: string
+  imageUrl?: string
+}
+
 export const MAX_CONCURRENT_GUESTS = 3
 export const OPENING_MINUTE = 9 * 60
 export const CLOSING_MINUTE = 19 * 60
@@ -63,12 +72,12 @@ export const HANBOK_OPTIONS: HanbokOption[] = [
   { id: 'ceremony-heirloom', nameEn: 'Ceremony Heirloom', nameKo: '예식 명작', price: 50000, color: '#9e5362' },
 ] as const
 
-export const HAIRSTYLES = [
-  { id: 'natural', nameEn: 'Natural hair', nameKo: '자연스러운 헤어', price: 0 },
-  { id: 'soft-bun', nameEn: 'Soft bun', nameKo: '단아한 쪽머리', price: 5000 },
-  { id: 'braided', nameEn: 'Braided accent', nameKo: '땋은 머리 장식', price: 10000 },
-  { id: 'royal-updo', nameEn: 'Royal updo', nameKo: '왕실 업스타일', price: 15000 },
-] as const
+export const HAIRSTYLES: HairstyleOption[] = [
+  { id: 'natural', nameEn: 'Natural hair', nameKo: '자연스러운 헤어', price: 0, color: '#d8c3ad' },
+  { id: 'soft-bun', nameEn: 'Soft bun', nameKo: '단아한 쪽머리', price: 5000, color: '#c9b29b' },
+  { id: 'braided', nameEn: 'Braided accent', nameKo: '땋은 머리 장식', price: 10000, color: '#b88767' },
+  { id: 'royal-updo', nameEn: 'Royal updo', nameKo: '왕실 업스타일', price: 15000, color: '#d2ad71' },
+]
 
 export const SHOE_SIZES = ['220', '225', '230', '235', '240', '245', '250', '255', '260', '265', '270', '275', '280']
 

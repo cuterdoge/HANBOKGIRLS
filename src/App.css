@@ -1025,64 +1025,111 @@
   width: 25px;
 }
 
-.hanbok-picker {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: 112px minmax(0, 1fr);
+.look-gallery-fieldset {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
 }
 
-.hanbok-preview {
+.look-gallery-fieldset legend {
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.look-option-gallery {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+}
+
+.look-option {
+  background: #fff;
+  border: 1px solid #e8e2d9;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.look-option:hover {
+  border-color: var(--plum);
+}
+
+.look-option:focus-visible {
+  outline: 2px solid var(--plum);
+  outline-offset: 2px;
+}
+
+.look-option.is-selected {
+  border-color: var(--plum);
+  box-shadow: 0 0 0 1px var(--plum);
+}
+
+.look-option-media {
   align-items: center;
+  aspect-ratio: 4 / 3;
   background:
     radial-gradient(ellipse at 50% 30%, rgba(255, 252, 237, 0.85), transparent 28%),
-    linear-gradient(145deg, var(--hanbok-color), #f1e7d6);
+    linear-gradient(145deg, var(--option-color), #f1e7d6);
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.look-option-image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.look-option-placeholder {
+  align-items: center;
   color: rgba(61, 58, 52, 0.68);
   display: flex;
   flex-direction: column;
-  font-size: 8px;
-  gap: 4px;
+  gap: 6px;
   justify-content: center;
-  min-height: 108px;
+  padding: 8px;
   text-align: center;
 }
 
-.hanbok-preview-image {
-  height: 108px;
-  object-fit: cover;
-  width: 112px;
-}
-
-.hanbok-preview small {
-  font-size: 6px;
-  letter-spacing: 0.15em;
-  margin-top: 5px;
-}
-
-.preview-flower {
+.look-option-placeholder > span {
   color: rgba(154, 89, 99, 0.75);
-  font-size: 19px;
+  font-size: 22px;
 }
 
-.hanbok-fields {
-  align-self: center;
+.look-option-placeholder small {
+  font-size: 8px;
+  line-height: 1.3;
 }
 
-.selected-hanbok-name {
-  align-items: center;
-  color: var(--muted);
+.look-option-copy {
   display: flex;
-  font-family: var(--serif);
-  font-size: 12px;
-  gap: 7px;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
 }
 
-.color-dot {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 50%;
-  display: inline-block;
-  height: 12px;
-  width: 12px;
+.look-option-copy strong {
+  font-family: var(--serif);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.look-option-copy small {
+  color: var(--muted);
+  font-size: 9px;
 }
 
 .add-on-grid {
@@ -1090,6 +1137,10 @@
   gap: 13px 15px;
   grid-template-columns: 1fr 1fr;
   margin-top: 14px;
+}
+
+.hairstyle-gallery-fieldset {
+  grid-column: 1 / -1;
 }
 
 .checkbox-option {
@@ -1722,19 +1773,6 @@
 
   .step-title-row h2 {
     margin-bottom: 5px;
-  }
-
-  .hanbok-picker {
-    grid-template-columns: 88px minmax(0, 1fr);
-  }
-
-  .hanbok-preview {
-    min-height: 96px;
-  }
-
-  .hanbok-preview-image {
-    height: 96px;
-    width: 88px;
   }
 
   .add-on-grid {

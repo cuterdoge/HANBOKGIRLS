@@ -73,12 +73,11 @@ const messages = {
     lookHint: 'These sample styles and prices are ready to replace with your collection.',
     guest: 'Guest',
     chooseHanbok: 'Choose a hanbok',
-    previewSlot: 'Your photo goes here',
+    photoComing: 'Photo coming soon',
     hairTitle: 'Hairstyle',
     makeupTitle: 'Makeup',
     shoesTitle: 'Shoes',
     bagTitle: 'Bag',
-    chooseStyle: 'Choose a style',
     naturalHair: 'Natural hair',
     addMakeup: 'Add makeup',
     addShoes: 'Add shoes',
@@ -183,12 +182,11 @@ const messages = {
     lookHint: '예시 스타일과 가격입니다. 실제 한복 목록으로 바꿀 수 있어요.',
     guest: '방문객',
     chooseHanbok: '한복 선택',
-    previewSlot: '한복 사진이 들어갈 자리',
+    photoComing: '사진 준비 중',
     hairTitle: '헤어 스타일',
     makeupTitle: '메이크업',
     shoesTitle: '신발',
     bagTitle: '가방',
-    chooseStyle: '스타일 선택',
     naturalHair: '기본 헤어',
     addMakeup: '메이크업 추가',
     addShoes: '신발 추가',
@@ -721,35 +719,70 @@ function App() {
                 <div className="step-title-row"><div><h2>{t.yourLookTitle}</h2><p>{t.lookHint}</p></div><span className="sample-label">{t.sample}</span></div>
                 <div className="guest-style-list">
                   {guests.map((guest, index) => {
-                    const selectedHanbok = HANBOK_OPTIONS.find((option) => option.id === guest.hanbokId) ?? HANBOK_OPTIONS[0]
                     return (
                       <article className="guest-style-card" key={`guest-${index}`}>
                         <div className="guest-style-heading"><span className="guest-badge">{String(index + 1).padStart(2, '0')}</span><h3>{t.guest} {index + 1}</h3></div>
-                        <div className="hanbok-picker">
-                          {selectedHanbok.imageUrl ? (
-                            <img className="hanbok-preview-image" src={selectedHanbok.imageUrl} alt={language === 'ko' ? selectedHanbok.nameKo : selectedHanbok.nameEn} />
-                          ) : (
-                            <div className="hanbok-preview" style={{ '--hanbok-color': selectedHanbok.color } as CSSProperties}>
-                              <span className="preview-flower">✿</span><span>{t.previewSlot}</span><small>PHOTO SLOT</small>
-                            </div>
-                          )}
-                          <div className="hanbok-fields">
-                            <label className="form-field">
-                              <span>{t.chooseHanbok}</span>
-                              <select value={guest.hanbokId} onChange={(event) => setGuests((current) => updateGuest(current, index, { hanbokId: event.target.value }))}>
-                                {HANBOK_OPTIONS.map((option) => <option value={option.id} key={option.id}>{language === 'ko' ? option.nameKo : option.nameEn} — {money(option.price)}</option>)}
-                              </select>
-                            </label>
-                            <div className="selected-hanbok-name"><span className="color-dot" style={{ backgroundColor: selectedHanbok.color }} />{language === 'ko' ? selectedHanbok.nameKo : selectedHanbok.nameEn}</div>
+                        <fieldset className="look-gallery-fieldset">
+                          <legend>{t.chooseHanbok}</legend>
+                          <div className="look-option-gallery hanbok-option-gallery">
+                            {HANBOK_OPTIONS.map((option) => {
+                              const selected = guest.hanbokId === option.id
+                              return (
+                                <button
+                                  className={`look-option ${selected ? 'is-selected' : ''}`}
+                                  type="button"
+                                  key={option.id}
+                                  aria-pressed={selected}
+                                  onClick={() => setGuests((current) => updateGuest(current, index, { hanbokId: option.id }))}
+                                  style={{ '--option-color': option.color } as CSSProperties}
+                                >
+                                  <span className="look-option-media">
+                                    {option.imageUrl ? (
+                                      <img className="look-option-image" src={option.imageUrl} alt="" loading="lazy" />
+                                    ) : (
+                                      <span className="look-option-placeholder"><span aria-hidden="true">✿</span><small>{t.photoComing}</small></span>
+                                    )}
+                                  </span>
+                                  <span className="look-option-copy">
+                                    <strong>{language === 'ko' ? option.nameKo : option.nameEn}</strong>
+                                    <small>{money(option.price)}</small>
+                                  </span>
+                                </button>
+                              )
+                            })}
                           </div>
-                        </div>
+                        </fieldset>
                         <div className="add-on-grid">
-                          <label className="form-field">
-                            <span>{t.hairTitle}</span>
-                            <select value={guest.hairstyleId} onChange={(event) => setGuests((current) => updateGuest(current, index, { hairstyleId: event.target.value }))}>
-                              {HAIRSTYLES.map((style) => <option value={style.id} key={style.id}>{language === 'ko' ? style.nameKo : style.nameEn} — {style.price === 0 ? t.free : money(style.price)}</option>)}
-                            </select>
-                          </label>
+                          <fieldset className="look-gallery-fieldset hairstyle-gallery-fieldset">
+                            <legend>{t.hairTitle}</legend>
+                            <div className="look-option-gallery hairstyle-option-gallery">
+                              {HAIRSTYLES.map((style) => {
+                                const selected = guest.hairstyleId === style.id
+                                return (
+                                  <button
+                                    className={`look-option ${selected ? 'is-selected' : ''}`}
+                                    type="button"
+                                    key={style.id}
+                                    aria-pressed={selected}
+                                    onClick={() => setGuests((current) => updateGuest(current, index, { hairstyleId: style.id }))}
+                                    style={{ '--option-color': style.color } as CSSProperties}
+                                  >
+                                    <span className="look-option-media">
+                                      {style.imageUrl ? (
+                                        <img className="look-option-image" src={style.imageUrl} alt="" loading="lazy" />
+                                      ) : (
+                                        <span className="look-option-placeholder"><span aria-hidden="true">✿</span><small>{t.photoComing}</small></span>
+                                      )}
+                                    </span>
+                                    <span className="look-option-copy">
+                                      <strong>{language === 'ko' ? style.nameKo : style.nameEn}</strong>
+                                      <small>{style.price === 0 ? t.free : money(style.price)}</small>
+                                    </span>
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </fieldset>
                           <label className="checkbox-option">
                             <input type="checkbox" checked={guest.makeup} onChange={(event) => setGuests((current) => updateGuest(current, index, { makeup: event.target.checked }))} />
                             <span><strong>{t.makeupTitle}</strong><small>{t.addMakeup} · {money(20000)}</small></span>
