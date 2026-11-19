@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import {
   CLOSING_MINUTE,
+  JEOGORI_OPTIONS,
   DURATIONS,
   getGuestPrice,
+  getCompatibleOptions,
+  getPackageTotal,
   getPaymentAmounts,
   getTimeSlots,
   type CapacityBooking,
   createGuestSelection,
+  isBookingRecord,
 } from './booking'
 
 describe('booking time slots', () => {
@@ -71,6 +75,44 @@ describe('booking price calculations', () => {
     expect(getPaymentAmounts(235000, 'full')).toEqual({
       amountDueNow: 235000,
       remainingBalance: 0,
+    })
+  })
+
+  describe('demo packages and wardrobe sizing', () => {
+    it('charges a fixed sample package price per guest', () => {
+      expect(getPackageTotal('styled', 2)).toBe(130000)
+      expect(getPackageTotal('complete', 1)).toBe(100000)
+    })
+
+    it('filters sample Jeogori options by clothing size', () => {
+      expect(getCompatibleOptions(JEOGORI_OPTIONS, 'XXL').map((option) => option.id)).toEqual([
+        'rose-jeogori',
+        'jade-jeogori',
+        'moon-jeogori',
+      ])
+    })
+
+    it('continues to accept older browser-saved bookings without the new demo fields', () => {
+      expect(isBookingRecord({
+        id: 'HG-LEGACY',
+        date: '2030-01-02',
+        startMin: 540,
+        endMin: 630,
+        duration: 'short',
+        guests: [{
+          hanbokId: 'spring-garden',
+          hairstyleId: 'natural',
+          makeup: false,
+          shoes: false,
+          shoeSize: '',
+          bag: false,
+        }],
+        contact: { name: 'Guest', phone: '+821012345678', email: 'guest@example.com' },
+        paymentType: 'full',
+        total: 20000,
+        amountPaid: 20000,
+        createdAt: '2030-01-01T00:00:00.000Z',
+      })).toBe(true)
     })
   })
 })
