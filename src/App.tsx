@@ -45,7 +45,7 @@ const baseMessages = {
     stepTwo: 'Make it yours',
     stepTwoText: 'Compare packages and choose the experience that suits you.',
     stepThree: 'Customize your look',
-    stepThreeText: 'Choose your outfit after selecting a package.',
+    stepThreeText: 'Choose your outfit after payment.',
     visitEyebrow: 'FIND US IN SEOUL',
     visitTitle: 'A little more time for the good parts.',
     visitText: 'Reserve ahead, skip the fitting-room wait, and spend more of your day making memories.',
@@ -59,7 +59,7 @@ const baseMessages = {
     language: 'Language',
     bookingTitle: 'Let’s plan your visit',
     bookingIntro: 'A few thoughtful choices now, and more time to enjoy Seoul later.',
-    stepLabel: ['Date & time', 'Package', 'Details & payment'],
+    stepLabel: ['Date & time', 'Package', 'Details', 'Payment'],
     durationTitle: 'How long would you like to explore?',
     durations: {
       short: { title: 'Little escape', duration: '1.5 hours', note: 'A lovely first look' },
@@ -87,9 +87,15 @@ const baseMessages = {
     serviceLanguage: 'Preferred service language',
     smsReminderConsent: 'Would you like a return reminder?',
     smsConsentHint: 'Set your reminder preference.',
-    checkoutTitle: 'Review your visit and payment choice',
-    checkoutHint: 'Choose a package and payment amount before styling your outfit.',
     continueToStyling: 'Continue to styling',
+    continueToPayment: 'Continue to payment',
+    paymentTitle: 'Complete your payment',
+    paymentOptionsTitle: 'Choose a payment amount',
+    paymentMethodTitle: 'Payment method',
+    cardPayment: 'Credit or debit card',
+    payNow: 'Pay now',
+    paymentSuccessTitle: 'Payment complete',
+    paymentSuccessText: 'Your booking is ready. Continue to styling.',
     customizationTitle: 'Customize your hanbok',
     customizationIntro: 'Your package is selected. Enter measurements and choose a look for each guest.',
     measurementsTitle: 'Measurements',
@@ -155,11 +161,10 @@ const baseMessages = {
     phone: 'Mobile number',
     email: 'Email address',
     countryPlaceholder: 'Enter country or region',
-    paymentTitle: 'Choose a payment option',
-    fullPayment: 'Full amount',
-    depositPayment: '20% deposit',
-    dueToday: 'Amount selected now',
-    dueAtVenue: 'Remaining balance',
+    fullPayment: 'Pay in full',
+    depositPayment: 'Pay a 20% deposit',
+    dueToday: 'Due now',
+    dueAtVenue: 'Remaining at venue',
     orderSummary: 'Your visit',
     summaryDate: 'Date',
     summaryTime: 'Start',
@@ -169,7 +174,7 @@ const baseMessages = {
     confirmedTitle: 'Your Seoul visit details are ready!',
     confirmedText: 'Keep your booking code with your visit details.',
     bookingCode: 'BOOKING CODE',
-    amountPaid: 'Selected amount',
+    amountPaid: 'Amount paid',
     qrTitle: 'Your booking QR',
     qrHelp: 'Your booking code is embedded in this QR for reference.',
     startOver: 'Back to home',
@@ -198,7 +203,7 @@ const baseMessages = {
     stepTwo: '나만의 스타일',
     stepTwoText: '원하는 체험 패키지를 비교하고 선택해요.',
     stepThree: '나만의 스타일',
-    stepThreeText: '패키지를 선택한 뒤 나만의 한복 스타일을 꾸며 보세요.',
+    stepThreeText: '결제를 완료한 뒤 나만의 한복 스타일을 꾸며 보세요.',
     visitEyebrow: '서울에서 만나요',
     visitTitle: '좋아하는 순간에 더 많은 시간을.',
     visitText: '미리 예약하고 피팅 대기 시간을 줄여 서울의 하루를 더 여유롭게 즐겨 보세요.',
@@ -212,7 +217,7 @@ const baseMessages = {
     language: '언어',
     bookingTitle: '방문을 준비해 볼까요?',
     bookingIntro: '미리 몇 가지만 선택하면 서울에서 더 여유롭게 즐길 수 있어요.',
-    stepLabel: ['날짜와 시간', '패키지', '정보와 결제'],
+    stepLabel: ['날짜와 시간', '패키지', '정보 입력', '결제'],
     durationTitle: '얼마나 이용하고 싶으세요?',
     durations: {
       short: { title: '가벼운 나들이', duration: '1시간 30분', note: '한복을 처음 입어 보는 날' },
@@ -240,9 +245,15 @@ const baseMessages = {
     serviceLanguage: '원하는 서비스 언어',
     smsReminderConsent: '반납 알림을 원하시나요?',
     smsConsentHint: '알림 선호도를 선택해 주세요.',
-    checkoutTitle: '방문 및 결제 선택을 확인해 주세요',
-    checkoutHint: '한복 스타일링 전에 패키지와 결제 금액을 선택해 주세요.',
     continueToStyling: '스타일 선택 계속하기',
+    continueToPayment: '결제 페이지로',
+    paymentTitle: '결제를 진행해 주세요',
+    paymentOptionsTitle: '결제 금액을 선택해 주세요',
+    paymentMethodTitle: '결제 방법',
+    cardPayment: '신용/체크카드',
+    payNow: '결제하기',
+    paymentSuccessTitle: '결제가 완료됐어요',
+    paymentSuccessText: '예약 정보가 준비됐어요. 스타일을 골라 보세요.',
     customizationTitle: '나만의 한복 꾸미기',
     customizationIntro: '패키지를 선택했어요. 방문객별 사이즈를 입력하고 스타일을 골라 보세요.',
     measurementsTitle: '신체 사이즈',
@@ -308,11 +319,10 @@ const baseMessages = {
     phone: '휴대폰 번호',
     email: '이메일 주소',
     countryPlaceholder: '국가 또는 지역 입력',
-    paymentTitle: '결제 방법 선택',
-    fullPayment: '전체 금액',
-    depositPayment: '20% 예약금',
-    dueToday: '지금 선택하는 금액',
-    dueAtVenue: '남은 금액',
+    fullPayment: '전액 결제',
+    depositPayment: '20% 예약금 결제',
+    dueToday: '지금 결제할 금액',
+    dueAtVenue: '매장 결제 잔액',
     orderSummary: '예약 내용',
     summaryDate: '날짜',
     summaryTime: '시작 시간',
@@ -322,7 +332,7 @@ const baseMessages = {
     confirmedTitle: '서울 방문 정보가 준비됐어요!',
     confirmedText: '방문 정보와 함께 예약 번호를 보관해 주세요.',
     bookingCode: '예약 번호',
-    amountPaid: '선택한 금액',
+    amountPaid: '결제 금액',
     qrTitle: '예약 번호 QR',
     qrHelp: '이 QR에는 확인용 예약 번호가 포함되어 있어요.',
     startOver: '홈으로 돌아가기',
@@ -356,7 +366,7 @@ const messages = {
     stepTwo: '选择套餐',
     stepTwoText: '比较套餐并选择适合您的体验。',
     stepThree: '定制造型',
-    stepThreeText: '完成模拟付款后再搭配韩服造型。',
+    stepThreeText: '选择套餐并完成付款后，再搭配韩服造型。',
     visitEyebrow: '首尔见',
     visitTitle: '为美好时光多留一点时间。',
     visitText: '提前预约，减少试衣等待，在首尔享受更轻松的一天。',
@@ -370,7 +380,7 @@ const messages = {
     language: '语言',
     bookingTitle: '计划您的到访',
     bookingIntro: '提前做好选择，让您在首尔拥有更多轻松时光。',
-    stepLabel: ['日期和时间', '套餐', '信息和付款'],
+    stepLabel: ['日期和时间', '套餐', '信息', '付款'],
     durations: {
       short: { title: '轻松体验', duration: '1.5 小时', note: '初次体验的好选择' },
       long: { title: '悠闲午后', duration: '3 小时', note: '慢慢探索首尔' },
@@ -396,9 +406,15 @@ const messages = {
     serviceLanguage: '服务语言偏好',
     smsReminderConsent: '您需要归还提醒吗？',
     smsConsentHint: '设置您的提醒偏好。',
-    checkoutTitle: '确认到访信息和付款选择',
-    checkoutHint: '搭配造型前，请选择套餐和付款金额。',
     continueToStyling: '继续搭配造型',
+    continueToPayment: '继续付款',
+    paymentTitle: '完成付款',
+    paymentOptionsTitle: '选择付款金额',
+    paymentMethodTitle: '付款方式',
+    cardPayment: '信用卡/借记卡',
+    payNow: '立即付款',
+    paymentSuccessTitle: '付款完成',
+    paymentSuccessText: '预约信息已准备就绪。继续搭配造型。',
     customizationTitle: '定制您的韩服造型',
     customizationIntro: '套餐已选择。请填写每位客人的尺寸并挑选造型。',
     measurementsTitle: '尺寸信息',
@@ -464,11 +480,10 @@ const messages = {
     phone: '手机号码',
     email: '电子邮箱',
     countryPlaceholder: '输入国家或地区',
-    paymentTitle: '选择付款方式',
-    fullPayment: '全额金额',
-    depositPayment: '20% 预付款',
-    dueToday: '现在选择的金额',
-    dueAtVenue: '剩余金额',
+    fullPayment: '全额付款',
+    depositPayment: '支付 20% 定金',
+    dueToday: '现在支付',
+    dueAtVenue: '到店支付余额',
     orderSummary: '预约内容',
     summaryDate: '日期',
     summaryTime: '开始时间',
@@ -478,7 +493,7 @@ const messages = {
     confirmedTitle: '您的首尔行程信息已准备就绪！',
     confirmedText: '请与到访信息一同保存预约编号。',
     bookingCode: '预约编号',
-    amountPaid: '所选金额',
+    amountPaid: '已支付金额',
     qrTitle: '预约编号二维码',
     qrHelp: '此二维码包含预约编号，供您查询时参考。',
     startOver: '返回首页',
@@ -562,6 +577,7 @@ function App() {
     smsReminderConsent: false,
   })
   const [paymentType, setPaymentType] = useState<'full' | 'deposit'>('full')
+  const [paymentStatus, setPaymentStatus] = useState<'ready' | 'complete'>('ready')
   const [bookings, setBookings] = useState<BookingRecord[]>([])
   const [storageError, setStorageError] = useState(false)
   const [formError, setFormError] = useState('')
@@ -611,6 +627,7 @@ function App() {
       smsReminderConsent: false,
     })
     setPaymentType('full')
+    setPaymentStatus('ready')
     setCurrentBooking(null)
     setFormError('')
     setStartMin(null)
@@ -675,7 +692,7 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function confirmBooking(event: FormEvent<HTMLFormElement>) {
+  function toPaymentStep(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (
       !contact.name.trim() ||
@@ -693,6 +710,23 @@ function App() {
     }
     if (startMin === null) {
       setFormError(t.chooseTimeError)
+      return
+    }
+    setFormError('')
+    setStep(4)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function processPayment() {
+    if (paymentStatus === 'complete') return
+    if (!date || date < localDateString()) {
+      setFormError(t.dateError)
+      setStep(1)
+      return
+    }
+    if (startMin === null) {
+      setFormError(t.chooseTimeError)
+      setStep(1)
       return
     }
     let latestBookings: BookingRecord[]
@@ -751,6 +785,15 @@ function App() {
     setCurrentBooking(booking)
     setGuests(packageGuests)
     setFormError('')
+    setPaymentStatus('complete')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function continueToStyling() {
+    if (!currentBooking || paymentStatus !== 'complete') {
+      setStorageError(true)
+      return
+    }
     setPage('customization')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -942,9 +985,12 @@ function App() {
           </ul>
         )}
         <div className="summary-total"><span>{t.summaryTotal}</span><strong>{money(total)}</strong></div>
-        {step === 3 && (
+        {step === 4 && (
           <>
-            <div className="summary-total summary-due"><span>{t.dueToday}</span><strong>{money(payment.amountDueNow)}</strong></div>
+            <div className="summary-total summary-due">
+              <span>{paymentStatus === 'complete' ? t.amountPaid : t.dueToday}</span>
+              <strong>{money(payment.amountDueNow)}</strong>
+            </div>
             {payment.remainingBalance > 0 && <p className="balance-note">{t.dueAtVenue}: {money(payment.remainingBalance)}</p>}
           </>
         )}
@@ -1060,9 +1106,9 @@ function App() {
             )}
 
             {step === 3 && (
-              <form className="booking-step contact-step" onSubmit={confirmBooking}>
-                <h2>{t.checkoutTitle}</h2>
-                <p>{t.checkoutHint}</p>
+              <form className="booking-step contact-step" onSubmit={toPaymentStep}>
+                <h2>{t.contactTitle}</h2>
+                <p>{t.contactHint}</p>
                 <div className="contact-grid">
                   <label className="form-field"><span>{t.name}</span><input autoComplete="name" value={contact.name} onChange={(event) => setContact({ ...contact, name: event.target.value })} required /></label>
                   <label className="form-field"><span>{t.phone}</span><input type="tel" autoComplete="tel" inputMode="tel" pattern="[0-9+()\\-\\s]{8,20}" value={contact.phone} onChange={(event) => setContact({ ...contact, phone: event.target.value })} required /></label>
@@ -1081,23 +1127,63 @@ function App() {
                   <input type="checkbox" checked={contact.smsReminderConsent ?? false} onChange={(event) => setContact({ ...contact, smsReminderConsent: event.target.checked })} />
                   <span><strong>{t.smsReminderConsent}</strong><small>{t.smsConsentHint}</small></span>
                 </label>
-                <fieldset className="payment-options">
-                  <legend>{t.paymentTitle}</legend>
-                  <label className={`payment-option ${paymentType === 'full' ? 'is-selected' : ''}`}>
-                    <input type="radio" name="payment" value="full" checked={paymentType === 'full'} onChange={() => setPaymentType('full')} />
-                    <span><strong>{t.fullPayment}</strong><small>{money(total)}</small></span>
-                  </label>
-                  <label className={`payment-option ${paymentType === 'deposit' ? 'is-selected' : ''}`}>
-                    <input type="radio" name="payment" value="deposit" checked={paymentType === 'deposit'} onChange={() => setPaymentType('deposit')} />
-                    <span><strong>{t.depositPayment}</strong><small>{money(getPaymentAmounts(total, 'deposit').amountDueNow)}</small></span>
-                  </label>
-                </fieldset>
                 {formError && <p className="form-error" role="alert">{formError}</p>}
                 <div className="step-actions step-actions-between">
                   <button className="button button-outline" type="button" onClick={() => { setStep(2); setFormError('') }}>← {t.back}</button>
-                  <button className="button button-plum" type="submit">{t.continueToStyling}<span aria-hidden="true"> →</span></button>
+                  <button className="button button-plum" type="submit">{t.continueToPayment}<span aria-hidden="true"> →</span></button>
                 </div>
               </form>
+            )}
+
+            {step === 4 && (
+              <div className="booking-step payment-step">
+                {paymentStatus === 'complete' ? (
+                  <div className="payment-success-panel" role="status">
+                    <span className="payment-success-icon" aria-hidden="true">✓</span>
+                    <p className="eyebrow">{t.paymentSuccessTitle}</p>
+                    <h2>{money(currentBooking?.amountPaid ?? payment.amountDueNow)}</h2>
+                    <p>{t.paymentSuccessText}</p>
+                    {currentBooking && (
+                      <p className="payment-reference">{t.bookingCode}: {currentBooking.id}</p>
+                    )}
+                    <div className="step-actions">
+                      <button className="button button-plum" type="button" onClick={continueToStyling}>
+                        {t.continueToStyling}<span aria-hidden="true"> →</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <h2>{t.paymentTitle}</h2>
+                    <div className="payment-method-card">
+                      <span className="payment-method-icon" aria-hidden="true">▰</span>
+                      <span>
+                        <strong>{t.paymentMethodTitle}</strong>
+                        <small>{t.cardPayment}</small>
+                      </span>
+                      <span className="payment-method-check" aria-hidden="true">✓</span>
+                    </div>
+                    <fieldset className="payment-options">
+                      <legend>{t.paymentOptionsTitle}</legend>
+                      <label className={`payment-option ${paymentType === 'full' ? 'is-selected' : ''}`}>
+                        <input type="radio" name="payment" value="full" checked={paymentType === 'full'} onChange={() => setPaymentType('full')} />
+                        <span><strong>{t.fullPayment}</strong><small>{money(total)}</small></span>
+                      </label>
+                      <label className={`payment-option ${paymentType === 'deposit' ? 'is-selected' : ''}`}>
+                        <input type="radio" name="payment" value="deposit" checked={paymentType === 'deposit'} onChange={() => setPaymentType('deposit')} />
+                        <span><strong>{t.depositPayment}</strong><small>{money(getPaymentAmounts(total, 'deposit').amountDueNow)}</small></span>
+                      </label>
+                    </fieldset>
+                    {formError && <p className="form-error" role="alert">{formError}</p>}
+                    <div className="step-actions step-actions-between">
+                      <button className="button button-outline" type="button" onClick={() => { setStep(3); setFormError('') }}>← {t.back}</button>
+                      <button className="button button-plum" type="button" onClick={processPayment}>
+                        {t.payNow} {money(payment.amountDueNow)}<span aria-hidden="true"> →</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             )}
           </section>
           <div className="summary-column">{renderSummary()}</div>
