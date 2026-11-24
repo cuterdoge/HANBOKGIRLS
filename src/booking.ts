@@ -3,6 +3,11 @@ export type PackageId = 'essential' | 'styled' | 'complete'
 export type ServiceLanguage = 'en' | 'ko' | 'zh'
 export type ClothingSize = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'
 export type ColorPalette = 'warm' | 'cool' | 'neutral'
+export type JewelryTone = 'gold' | 'silver' | 'both'
+export type ColorQuestionnaireAnswers = {
+  jewelryTone?: JewelryTone
+  preferredPalette?: ColorPalette
+}
 
 export type GuestSelection = {
   hanbokId: string
@@ -90,10 +95,9 @@ export const OPENING_MINUTE = 9 * 60
 export const CLOSING_MINUTE = 19 * 60
 export const BOOKING_STORAGE_KEY = 'hanbokgirls-demo-bookings'
 
-export const DURATIONS: Record<DurationKey, number> = {
+export const DURATIONS: Record<Exclude<DurationKey, 'day'>, number> = {
   short: 90,
   long: 180,
-  day: CLOSING_MINUTE - OPENING_MINUTE,
 }
 
 const ALL_CLOTHING_SIZES: readonly ClothingSize[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
@@ -214,6 +218,18 @@ export function localDateString(date = new Date()): string {
   return `${year}-${month}-${day}`
 }
 
+export function getBookingEndMinute(startMin: number, duration: DurationKey): number {
+  return duration === 'day' ? CLOSING_MINUTE : startMin + DURATIONS[duration]
+}
+
+export function suggestColorPalette(answers: ColorQuestionnaireAnswers): ColorPalette | undefined {
+  if (answers.preferredPalette) return answers.preferredPalette
+  if (answers.jewelryTone === 'gold') return 'warm'
+  if (answers.jewelryTone === 'silver') return 'cool'
+  if (answers.jewelryTone === 'both') return 'neutral'
+  return undefined
+}
+
 export function getTimeSlots(
   date: string,
   duration: DurationKey,
@@ -221,19 +237,16 @@ export function getTimeSlots(
   bookings: CapacityBooking[],
   now = new Date(),
 ): { startMin: number; remainingCapacity: number }[] {
-  const sessionLength = DURATIONS[duration]
-  const lastStart = CLOSING_MINUTE - sessionLength
-  const starts =
-    duration === 'day'
-      ? [OPENING_MINUTE]
-      : Array.from(
-          { length: Math.floor((lastStart - OPENING_MINUTE) / 30) + 1 },
-          (_, index) => OPENING_MINUTE + index * 30,
-        )
+  const lastStart =
+    duration === 'day' ? 16 * 60 - 30 : CLOSING_MINUTE - DURATIONS[duration]
+  const starts = Array.from(
+    { length: Math.floor((lastStart - OPENING_MINUTE) / 30) + 1 },
+    (_, index) => OPENING_MINUTE + index * 30,
+  )
 
   return starts
     .map((startMin) => {
-      const endMin = startMin + sessionLength
+      const endMin = getBookingEndMinute(startMin, duration)
       let remainingCapacity = MAX_CONCURRENT_GUESTS
 
       for (let minute = startMin; minute < endMin; minute += 30) {

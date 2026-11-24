@@ -5,9 +5,11 @@ import {
   DURATIONS,
   getGuestPrice,
   getCompatibleOptions,
+  getBookingEndMinute,
   getPackageTotal,
   getPaymentAmounts,
   getTimeSlots,
+  suggestColorPalette,
   type CapacityBooking,
   createGuestSelection,
   isBookingRecord,
@@ -24,7 +26,24 @@ describe('booking time slots', () => {
     expect(short[0].startMin).toBe(9 * 60)
     expect(short.at(-1)?.startMin).toBe(CLOSING_MINUTE - DURATIONS.short)
     expect(long.at(-1)?.startMin).toBe(CLOSING_MINUTE - DURATIONS.long)
-    expect(day.map((slot) => slot.startMin)).toEqual([9 * 60])
+    expect(day[0].startMin).toBe(9 * 60)
+    expect(day.at(-1)?.startMin).toBe(15 * 60 + 30)
+    expect(day.every((slot, index) => slot.startMin === 9 * 60 + index * 30)).toBe(true)
+    expect(getBookingEndMinute(day[day.length - 1].startMin, 'day')).toBe(CLOSING_MINUTE)
+  })
+
+  it('checks late-start full-day bookings through closing time', () => {
+    const existing: CapacityBooking[] = [{
+      date: '2030-01-02',
+      startMin: 17 * 60,
+      endMin: 17 * 60 + 30,
+      guests: [createGuestSelection(), createGuestSelection()],
+    }]
+    const oneGuestSlots = getTimeSlots('2030-01-02', 'day', 1, existing, future)
+    const twoGuestSlots = getTimeSlots('2030-01-02', 'day', 2, existing, future)
+
+    expect(oneGuestSlots.find((slot) => slot.startMin === 15 * 60 + 30)?.remainingCapacity).toBe(1)
+    expect(twoGuestSlots.some((slot) => slot.startMin === 15 * 60 + 30)).toBe(false)
   })
 
   it('accounts for customers in overlapping bookings and leaves other dates untouched', () => {
@@ -52,6 +71,16 @@ describe('booking time slots', () => {
 
     expect(slots.some((slot) => slot.startMin <= 10 * 60)).toBe(false)
     expect(slots[0].startMin).toBe(10 * 60 + 30)
+  })
+})
+
+describe('personal-color suggestions', () => {
+  it('uses style preferences to suggest a palette, with color preference taking priority', () => {
+    expect(suggestColorPalette({ jewelryTone: 'gold' })).toBe('warm')
+    expect(suggestColorPalette({ jewelryTone: 'silver' })).toBe('cool')
+    expect(suggestColorPalette({ jewelryTone: 'both' })).toBe('neutral')
+    expect(suggestColorPalette({ jewelryTone: 'gold', preferredPalette: 'cool' })).toBe('cool')
+    expect(suggestColorPalette({})).toBeUndefined()
   })
 })
 
