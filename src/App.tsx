@@ -8,19 +8,23 @@ import {
   HAIRSTYLES,
   JEOGORI_OPTIONS,
   NORIGAE_OPTIONS,
-  RENTAL_PACKAGES,
+  HANBOK_TIERS,
   createGuestSelection,
   formatTime,
+  getBookingTotal,
   getBookingEndMinute,
   getPackageTotal,
   getPaymentAmounts,
   getTimeSlots,
   isBookingRecord,
   localDateString,
+  MAKEUP_PRICES,
+  SHOE_RENTAL_PRICE,
   type BookingRecord,
   type ContactDetails,
   type DurationKey,
   type GuestSelection,
+  type MakeupService,
   type PackageId,
   type ServiceLanguage,
   type WardrobeOption,
@@ -41,9 +45,9 @@ const baseMessages = {
     serviceTitle: 'Your hanbok moment, made easy.',
     serviceText: 'Choose your date, look, and little finishing touches before you arrive. We’ll have your visit ready for you.',
     stepOne: 'Choose a session',
-    stepOneText: 'Pick 1.5 hours, 3 hours, or a full day.',
-    stepTwo: 'Make it yours',
-    stepTwoText: 'Compare packages and choose the experience that suits you.',
+    stepOneText: 'Pick 2 hours, 4 hours, or a full day.',
+    stepTwo: 'Choose your Hanbok',
+    stepTwoText: 'Compare Hanbok tiers and select any makeup services.',
     stepThree: 'Customize your look',
     stepThreeText: 'Choose your outfit after payment.',
     visitEyebrow: 'FIND US IN SEOUL',
@@ -53,18 +57,18 @@ const baseMessages = {
     hourRange: '9:00 AM – 7:00 PM',
     addressLabel: 'OUR NEIGHBORHOOD',
     address: 'Seoul, South Korea',
-    addressNote: 'Exact venue address can be added here.',
+    addressNote: '8, Jahamun-ro 2-gil, Jongno-gu, Seoul, Republic of Korea',
     footerText: 'Hanbok rental shop · Seoul, South Korea',
     bookYourVisit: 'Book your visit',
     language: 'Language',
     bookingTitle: 'Let’s plan your visit',
     bookingIntro: 'A few thoughtful choices now, and more time to enjoy Seoul later.',
-    stepLabel: ['Date & time', 'Package', 'Details', 'Payment'],
+    stepLabel: ['Date & time', 'Hanbok & makeup', 'Details', 'Payment'],
     durationTitle: 'How long would you like to explore?',
     durations: {
-      short: { title: 'Little escape', duration: '1.5 hours', note: 'A lovely first look' },
-      long: { title: 'Slow afternoon', duration: '3 hours', note: 'Time to wander and explore' },
-      day: { title: 'Full day', duration: 'Start before 4 PM · Return by 7 PM', note: 'Choose your start time' },
+      short: { title: '2-hour rental', duration: '2 hours', note: 'A lovely first look' },
+      long: { title: '4-hour rental', duration: '4 hours', note: 'Time to wander and explore' },
+      day: { title: 'Full day', duration: 'Full day', note: 'Start before 4 PM · Return by 7 PM' },
     },
     visitDate: 'Visit date',
     numberGuests: 'How many guests?',
@@ -76,13 +80,17 @@ const baseMessages = {
     unavailable: 'Full',
     continue: 'Continue',
     back: 'Back',
-    packageTitle: 'Choose your rental package',
-    packageHint: 'Illustrative prices per guest. Your package total stays fixed while you customize.',
+    packageTitle: 'Choose your Hanbok tier',
+    packageHint: 'Prices are per guest. Optional makeup is added to your total.',
     packagePrice: 'per guest',
-    included: 'Included',
-    packageEssentialIncludes: 'Hanbok rental, outfit choices, and a keepsake bag',
-    packageStyledIncludes: 'Essential package plus hairstyling, a hair accessory, and Norigae',
-    packageCompleteIncludes: 'Styled package plus makeup and shoes',
+    selectedPrice: 'Selected duration',
+    tierSubtotal: 'Hanbok subtotal',
+    makeupHint: 'Choose a service for each guest; the listed fee is added to the Hanbok price.',
+    makeupNone: 'No makeup',
+    menMakeup: "Men's makeup",
+    womenMakeup: "Women's makeup",
+    noneOption: 'None',
+    included: 'Available',
     originCountry: 'Country or region of origin',
     serviceLanguage: 'Preferred service language',
     smsReminderConsent: 'Would you like a return reminder?',
@@ -97,9 +105,9 @@ const baseMessages = {
     paymentSuccessTitle: 'Payment complete',
     paymentSuccessText: 'Your booking is ready. Continue to styling.',
     customizationTitle: 'Customize your hanbok',
-    customizationIntro: 'Your package is selected. Enter measurements and choose a look for each guest.',
+    customizationIntro: 'Your Hanbok tier and services are selected. Enter measurements and choose a look for each guest.',
     measurementsTitle: 'Measurements',
-    measurementsHint: 'Enter each guest’s measurements to see available garment sizes.',
+    measurementsHint: 'Enter each guest’s height and clothing size. Shoe size is needed only if shoes are added.',
     height: 'Height',
     clothingSize: 'Clothing size',
     shoeSize: 'Korean shoe size',
@@ -133,11 +141,10 @@ const baseMessages = {
     norigae: 'Norigae (pendant)',
     preview: 'Outfit preview',
     recommended: 'Palette suggestion',
-    packageLocked: 'Hairstyling and accessories are included in Styled and Complete packages.',
     reviewTitle: 'Review your outfit',
     reviewHint: 'Check the selections and measurements before finishing your booking.',
-    packageLabel: 'Package',
-    measurementsError: 'Enter a valid height, clothing size, and shoe size for every guest.',
+    packageLabel: 'Hanbok tier',
+    measurementsError: 'Enter a valid height and clothing size for every guest, and shoe size if shoes are selected.',
     finishCustomization: 'Finish booking',
     yourLookTitle: 'A look for every guest',
     lookHint: 'Explore styles and prices for each guest.',
@@ -199,9 +206,9 @@ const baseMessages = {
     serviceTitle: '더 여유롭게 즐기는 한복 체험.',
     serviceText: '방문 전에 날짜와 한복, 헤어와 소품을 골라 보세요. 예약에 맞춰 방문을 준비해 드립니다.',
     stepOne: '이용 시간 선택',
-    stepOneText: '1시간 30분, 3시간 또는 종일 이용을 선택해요.',
+    stepOneText: '2시간, 4시간 또는 종일 이용을 선택해요.',
     stepTwo: '나만의 스타일',
-    stepTwoText: '원하는 체험 패키지를 비교하고 선택해요.',
+    stepTwoText: '한복 등급을 비교하고 원하는 스타일을 선택해요.',
     stepThree: '나만의 스타일',
     stepThreeText: '결제를 완료한 뒤 나만의 한복 스타일을 꾸며 보세요.',
     visitEyebrow: '서울에서 만나요',
@@ -211,18 +218,18 @@ const baseMessages = {
     hourRange: '매일 오전 9시 – 오후 7시',
     addressLabel: '위치',
     address: '대한민국 서울',
-    addressNote: '정확한 매장 주소를 여기에 추가할 수 있어요.',
+    addressNote: '서울특별시 종로구 자하문로2길 8(적선동98), 3층',
     footerText: '한복 대여점 · 대한민국 서울',
     bookYourVisit: '방문 예약하기',
     language: '언어',
     bookingTitle: '방문을 준비해 볼까요?',
     bookingIntro: '미리 몇 가지만 선택하면 서울에서 더 여유롭게 즐길 수 있어요.',
-    stepLabel: ['날짜와 시간', '패키지', '정보 입력', '결제'],
+    stepLabel: ['날짜와 시간', '한복 및 메이크업', '정보 입력', '결제'],
     durationTitle: '얼마나 이용하고 싶으세요?',
     durations: {
-      short: { title: '가벼운 나들이', duration: '1시간 30분', note: '한복을 처음 입어 보는 날' },
-      long: { title: '여유로운 오후', duration: '3시간', note: '천천히 둘러보고 싶은 날' },
-      day: { title: '종일 이용', duration: '오후 4시 전 시작 · 오후 7시 반납', note: '원하는 시작 시간을 선택해요' },
+      short: { title: '2시간 대여', duration: '2시간', note: '한복을 처음 입어 보는 날' },
+      long: { title: '4시간 대여', duration: '4시간', note: '천천히 둘러보고 싶은 날' },
+      day: { title: '종일 이용', duration: '종일', note: '오후 4시 전 시작 · 오후 7시 반납' },
     },
     visitDate: '방문 날짜',
     numberGuests: '방문 인원',
@@ -234,13 +241,17 @@ const baseMessages = {
     unavailable: '마감',
     continue: '계속하기',
     back: '뒤로',
-    packageTitle: '대여 패키지를 선택해 주세요',
-    packageHint: '1인 기준 참고 가격이며, 의상 선택 후에도 패키지 금액은 그대로예요.',
+    packageTitle: '한복 등급을 선택해 주세요',
+    packageHint: '가격은 1인 기준이며, 선택한 메이크업 비용은 총액에 추가돼요.',
     packagePrice: '1인 기준',
-    included: '포함',
-    packageEssentialIncludes: '한복 대여, 의상 선택, 기념 가방',
-    packageStyledIncludes: '에센셜 패키지에 헤어 스타일링, 머리 장식, 노리개 추가',
-    packageCompleteIncludes: '스타일링 패키지에 메이크업과 신발 추가',
+    selectedPrice: '선택한 이용 시간',
+    tierSubtotal: '한복 대여 소계',
+    makeupHint: '방문객별 메이크업을 선택해 주세요. 선택한 서비스 비용이 한복 가격에 추가돼요.',
+    makeupNone: '메이크업 없음',
+    menMakeup: '남성 메이크업',
+    womenMakeup: '여성 메이크업',
+    noneOption: '없음',
+    included: '선택 가능',
     originCountry: '국적 또는 거주 국가',
     serviceLanguage: '원하는 서비스 언어',
     smsReminderConsent: '반납 알림을 원하시나요?',
@@ -255,9 +266,9 @@ const baseMessages = {
     paymentSuccessTitle: '결제가 완료됐어요',
     paymentSuccessText: '예약 정보가 준비됐어요. 스타일을 골라 보세요.',
     customizationTitle: '나만의 한복 꾸미기',
-    customizationIntro: '패키지를 선택했어요. 방문객별 사이즈를 입력하고 스타일을 골라 보세요.',
+    customizationIntro: '한복 등급과 서비스를 선택했어요. 방문객별 사이즈를 입력하고 스타일을 골라 보세요.',
     measurementsTitle: '신체 사이즈',
-    measurementsHint: '방문객별 사이즈를 입력하면 선택 가능한 한복 사이즈를 확인할 수 있어요.',
+    measurementsHint: '방문객별 키와 의류 사이즈를 입력해 주세요. 신발을 선택한 경우에만 신발 사이즈가 필요해요.',
     height: '키',
     clothingSize: '의류 사이즈',
     shoeSize: '한국 신발 사이즈',
@@ -291,11 +302,10 @@ const baseMessages = {
     norigae: '노리개',
     preview: '한복 미리보기',
     recommended: '컬러 추천',
-    packageLocked: '헤어 스타일링과 장식은 스타일링 또는 컴플리트 패키지에 포함돼요.',
     reviewTitle: '의상 확인',
     reviewHint: '예약을 마치기 전에 의상과 사이즈를 확인해 주세요.',
-    packageLabel: '패키지',
-    measurementsError: '모든 방문객의 키, 의류 사이즈, 신발 사이즈를 입력해 주세요.',
+    packageLabel: '한복 등급',
+    measurementsError: '모든 방문객의 키와 의류 사이즈를 입력하고, 신발을 선택한 경우 신발 사이즈도 입력해 주세요.',
     finishCustomization: '예약 완료',
     yourLookTitle: '한 분씩 스타일을 골라 주세요',
     lookHint: '방문객별 스타일과 가격을 확인해 보세요.',
@@ -360,13 +370,13 @@ const messages = {
     explore: '计划行程',
     serviceTag: '难忘的一天',
     serviceTitle: '轻松预约韩服体验。',
-    serviceText: '提前选择日期、套餐和细节，让您到店后尽情享受首尔时光。',
+    serviceText: '提前选择日期、韩服等级和细节，让您到店后尽情享受首尔时光。',
     stepOne: '选择时段',
-    stepOneText: '选择日期、时长和到店时间。',
-    stepTwo: '选择套餐',
-    stepTwoText: '比较套餐并选择适合您的体验。',
+    stepOneText: '选择 2 小时、4 小时或全天体验。',
+    stepTwo: '选择韩服',
+    stepTwoText: '比较韩服等级，并为每位客人选择妆容服务。',
     stepThree: '定制造型',
-    stepThreeText: '选择套餐并完成付款后，再搭配韩服造型。',
+    stepThreeText: '选择韩服等级并完成付款后，再搭配韩服造型。',
     visitEyebrow: '首尔见',
     visitTitle: '为美好时光多留一点时间。',
     visitText: '提前预约，减少试衣等待，在首尔享受更轻松的一天。',
@@ -374,17 +384,17 @@ const messages = {
     hourRange: '每天 9:00 – 19:00',
     addressLabel: '地点',
     address: '韩国首尔',
-    addressNote: '可在此添加具体店铺地址。',
+    addressNote: '首尔特别市钟路区',
     footerText: '韩服租赁店 · 韩国首尔',
     bookYourVisit: '预约到访',
     language: '语言',
     bookingTitle: '计划您的到访',
     bookingIntro: '提前做好选择，让您在首尔拥有更多轻松时光。',
-    stepLabel: ['日期和时间', '套餐', '信息', '付款'],
+    stepLabel: ['日期和时间', '韩服与妆容', '信息', '付款'],
     durations: {
-      short: { title: '轻松体验', duration: '1.5 小时', note: '初次体验的好选择' },
-      long: { title: '悠闲午后', duration: '3 小时', note: '慢慢探索首尔' },
-      day: { title: '全天体验', duration: '16:00 前开始 · 19:00 前归还', note: '选择您的开始时间' },
+      short: { title: '2 小时租赁', duration: '2 小时', note: '初次体验的好选择' },
+      long: { title: '4 小时租赁', duration: '4 小时', note: '慢慢探索首尔' },
+      day: { title: '全天体验', duration: '全天', note: '16:00 前开始 · 19:00 前归还' },
     },
     visitDate: '到访日期',
     numberGuests: '到访人数',
@@ -395,13 +405,17 @@ const messages = {
     spotsLeft: '剩余名额',
     continue: '继续',
     back: '返回',
-    packageTitle: '选择租赁套餐',
-    packageHint: '参考单人价格；定制造型不会改变套餐总价。',
+    packageTitle: '选择韩服等级',
+    packageHint: '价格按每位客人计算。所选妆容服务费用会加入总价。',
     packagePrice: '每位',
-    included: '已包含',
-    packageEssentialIncludes: '韩服租赁、造型选择和纪念手提袋',
-    packageStyledIncludes: '基础套餐另含发型设计、发饰和韩服挂饰',
-    packageCompleteIncludes: '特色造型套餐另含妆容和鞋子',
+    selectedPrice: '所选时长价格',
+    tierSubtotal: '韩服小计',
+    makeupHint: '请为每位客人选择妆容服务；费用将加在韩服价格上。',
+    makeupNone: '不需要妆容',
+    menMakeup: '男士妆容',
+    womenMakeup: '女士妆容',
+    noneOption: '无',
+    included: '可选择',
     originCountry: '国家或地区',
     serviceLanguage: '服务语言偏好',
     smsReminderConsent: '您需要归还提醒吗？',
@@ -416,9 +430,9 @@ const messages = {
     paymentSuccessTitle: '付款完成',
     paymentSuccessText: '预约信息已准备就绪。继续搭配造型。',
     customizationTitle: '定制您的韩服造型',
-    customizationIntro: '套餐已选择。请填写每位客人的尺寸并挑选造型。',
+    customizationIntro: '韩服等级和服务已选择。请填写每位客人的尺寸并挑选造型。',
     measurementsTitle: '尺寸信息',
-    measurementsHint: '填写每位客人的尺寸，以查看可选韩服尺码。',
+    measurementsHint: '请填写每位客人的身高和服装尺码；仅在租鞋时需要填写鞋码。',
     height: '身高',
     clothingSize: '服装尺码',
     shoeSize: '韩国鞋码',
@@ -452,11 +466,10 @@ const messages = {
     norigae: 'Norigae（挂饰）',
     preview: '造型预览',
     recommended: '色系建议',
-    packageLocked: '发型设计和配饰仅包含在造型或完整套餐中。',
     reviewTitle: '确认您的造型',
     reviewHint: '完成预约前，请确认造型和尺寸。',
-    packageLabel: '套餐',
-    measurementsError: '请为每位客人填写有效身高、服装尺码和鞋码。',
+    packageLabel: '韩服等级',
+    measurementsError: '请为每位客人填写有效身高和服装尺码；如选择租鞋，还需填写鞋码。',
     finishCustomization: '完成预约',
     guest: '客人',
     yourLookTitle: '为每位客人选择造型',
@@ -523,12 +536,12 @@ function displayDate(date: string, language: Language): string {
   }).format(new Date(`${date}T12:00:00`))
 }
 
-function packageName(packageId: PackageId, language: Language): string {
-  const rentalPackage = RENTAL_PACKAGES.find((item) => item.id === packageId)
-  if (!rentalPackage) throw new Error(`Unknown rental package: ${packageId}`)
-  if (language === 'ko') return rentalPackage.nameKo
-  if (language === 'zh') return rentalPackage.nameZh
-  return rentalPackage.nameEn
+function packageName(tierId: PackageId, language: Language): string {
+  const tier = HANBOK_TIERS.find((item) => item.id === tierId)
+  if (!tier) throw new Error(`Unknown Hanbok tier: ${tierId}`)
+  if (language === 'ko') return tier.nameKo
+  if (language === 'zh') return tier.nameZh
+  return tier.nameEn
 }
 
 function wardrobeName(
@@ -567,7 +580,7 @@ function App() {
   const [date, setDate] = useState(localDateString())
   const [guests, setGuests] = useState<GuestSelection[]>([createGuestSelection()])
   const [startMin, setStartMin] = useState<number | null>(null)
-  const [packageId, setPackageId] = useState<PackageId>('essential')
+  const [tierId, setTierId] = useState<PackageId>('special')
   const [contact, setContact] = useState<ContactDetails>({
     name: '',
     phone: '',
@@ -605,7 +618,7 @@ function App() {
     () => getTimeSlots(date, duration, guests.length, bookings),
     [date, duration, guests.length, bookings],
   )
-  const total = getPackageTotal(packageId, guests.length)
+  const total = getBookingTotal(tierId, duration, guests)
   const payment = getPaymentAmounts(total, paymentType)
   useEffect(() => {
     document.documentElement.lang = language
@@ -617,7 +630,7 @@ function App() {
     setDate(localDateString())
     setDuration('short')
     setGuests([createGuestSelection()])
-    setPackageId('essential')
+    setTierId('special')
     setContact({
       name: '',
       phone: '',
@@ -645,11 +658,28 @@ function App() {
       setFormError(t.guestCountError)
       return
     }
+
     setGuests((current) =>
       Array.from({ length: value }, (_, index) => current[index] ?? createGuestSelection()),
     )
     setStartMin(null)
     setFormError('')
+  }
+
+  function changeMakeup(index: number, makeupService?: MakeupService) {
+    setGuests((current) =>
+      current.map((guest, guestIndex) =>
+        guestIndex === index
+          ? { ...guest, makeup: makeupService !== undefined, makeupService }
+          : guest,
+      ),
+    )
+  }
+
+  function changeShoes(index: number, shoes: boolean) {
+    setGuests((current) =>
+      current.map((guest, guestIndex) => guestIndex === index ? { ...guest, shoes } : guest),
+    )
   }
 
   function navigateHome(sectionId?: string) {
@@ -747,15 +777,10 @@ function App() {
       return
     }
 
-    const rentalPackage = RENTAL_PACKAGES.find((item) => item.id === packageId)
-    if (!rentalPackage) throw new Error(`Unknown rental package: ${packageId}`)
-    const totalPrice = getPackageTotal(packageId, guests.length)
+    const totalPrice = getBookingTotal(tierId, duration, guests)
     const amounts = getPaymentAmounts(totalPrice, paymentType)
     const packageGuests = guests.map((guest) => ({
       ...guest,
-      hairstyleId: rentalPackage.includesHairstyling ? guest.hairstyleId : 'natural',
-      makeup: rentalPackage.includesMakeup,
-      shoes: rentalPackage.includesShoes,
       bag: true,
     }))
     const booking: BookingRecord = {
@@ -765,7 +790,7 @@ function App() {
       endMin: getBookingEndMinute(startMin, duration),
       duration,
       guests: packageGuests,
-      packageId,
+      tierId,
       contact: { ...contact, serviceLanguage: contact.serviceLanguage ?? language },
       paymentType,
       total: totalPrice,
@@ -967,8 +992,7 @@ function App() {
   }
 
   function renderSummary() {
-    const rentalPackage = RENTAL_PACKAGES.find((item) => item.id === packageId)
-    if (!rentalPackage) throw new Error(`Unknown rental package: ${packageId}`)
+    const tierTotal = getPackageTotal(tierId, duration, guests.length)
     return (
       <aside className="booking-summary">
         <p className="eyebrow">{t.orderSummary}</p>
@@ -980,8 +1004,20 @@ function App() {
         </dl>
         {step > 1 && (
           <ul className="summary-looks">
-            <li><span>{t.packageLabel}</span><span>{packageName(packageId, language)}</span></li>
-            <li><span>{t.packagePrice}</span><span>{money(rentalPackage.price)}</span></li>
+            <li><span>{t.packageLabel}</span><span>{packageName(tierId, language)}</span></li>
+            <li><span>{t.tierSubtotal}</span><span>{money(tierTotal)}</span></li>
+            {guests.map((guest, index) => guest.makeupService && (
+              <li key={`makeup-summary-${index}`}>
+                <span>{t.guest} {index + 1} · {guest.makeupService === 'men' ? t.menMakeup : t.womenMakeup}</span>
+                <span>{money(MAKEUP_PRICES[guest.makeupService])}</span>
+              </li>
+            ))}
+            {guests.map((guest, index) => guest.shoes && (
+              <li key={`shoes-summary-${index}`}>
+                <span>{t.guest} {index + 1} · {t.shoesTitle}</span>
+                <span>{money(SHOE_RENTAL_PRICE)}</span>
+              </li>
+            ))}
           </ul>
         )}
         <div className="summary-total"><span>{t.summaryTotal}</span><strong>{money(total)}</strong></div>
@@ -1072,31 +1108,94 @@ function App() {
                   <div><h2>{t.packageTitle}</h2><p>{t.packageHint}</p></div>
                 </div>
                 <div className="rental-package-grid">
-                  {RENTAL_PACKAGES.map((rentalPackage) => {
-                    const selected = packageId === rentalPackage.id
-                    const name = language === 'ko' ? rentalPackage.nameKo : language === 'zh' ? rentalPackage.nameZh : rentalPackage.nameEn
-                    const description = language === 'ko' ? rentalPackage.descriptionKo : language === 'zh' ? rentalPackage.descriptionZh : rentalPackage.descriptionEn
-                    const inclusions = rentalPackage.id === 'essential'
-                      ? t.packageEssentialIncludes
-                      : rentalPackage.id === 'styled'
-                        ? t.packageStyledIncludes
-                        : t.packageCompleteIncludes
+                  {HANBOK_TIERS.map((tier) => {
+                    const selected = tierId === tier.id
+                    const name = language === 'ko' ? tier.nameKo : language === 'zh' ? tier.nameZh : tier.nameEn
+                    const description = language === 'ko' ? tier.descriptionKo : language === 'zh' ? tier.descriptionZh : tier.descriptionEn
                     return (
                       <button
                         className={`rental-package-card ${selected ? 'is-selected' : ''}`}
                         type="button"
-                        key={rentalPackage.id}
+                        key={tier.id}
                         aria-pressed={selected}
-                        onClick={() => setPackageId(rentalPackage.id)}
+                        onClick={() => setTierId(tier.id)}
                       >
                         <strong>{name}</strong>
-                        <span className="package-card-price">{money(rentalPackage.price)} <small>/ {t.packagePrice}</small></span>
+                        <span className="package-card-price-list">
+                          {(['short', 'long', 'day'] as const).map((key) => (
+                            <span className={duration === key ? 'is-current-duration' : ''} key={key}>
+                              <small>{t.durations[key].duration}</small>
+                              <strong>{money(tier.prices[key])}</strong>
+                            </span>
+                          ))}
+                        </span>
+                        <span className="package-card-current-price">
+                          {t.selectedPrice}: {money(tier.prices[duration])} <small>/ {t.packagePrice}</small>
+                        </span>
                         <span className="package-card-description">{description}</span>
-                        <span className="package-card-inclusions"><b>{t.included}:</b> {inclusions}</span>
                       </button>
                     )
                   })}
                 </div>
+                <section className="makeup-selection-section" aria-label={t.makeupTitle}>
+                  <div className="step-title-row">
+                    <div><h3>{t.makeupTitle}</h3><p>{t.makeupHint}</p></div>
+                  </div>
+                  <div className="makeup-selection-grid">
+                    {guests.map((guest, index) => (
+                      <fieldset className="makeup-selection-card" key={`makeup-${index}`}>
+                        <legend>{t.guest} {index + 1}</legend>
+                        <label className={`makeup-option ${!guest.makeupService ? 'is-selected' : ''}`}>
+                          <input
+                            type="radio"
+                            name={`makeup-${index}`}
+                            checked={!guest.makeupService}
+                            onChange={() => changeMakeup(index)}
+                          />
+                          <span><strong>{t.makeupNone}</strong><small>{t.free}</small></span>
+                        </label>
+                        <label className={`makeup-option ${guest.makeupService === 'men' ? 'is-selected' : ''}`}>
+                          <input
+                            type="radio"
+                            name={`makeup-${index}`}
+                            checked={guest.makeupService === 'men'}
+                            onChange={() => changeMakeup(index, 'men')}
+                          />
+                          <span><strong>{t.menMakeup}</strong><small>{money(MAKEUP_PRICES.men)}</small></span>
+                        </label>
+                        <label className={`makeup-option ${guest.makeupService === 'women' ? 'is-selected' : ''}`}>
+                          <input
+                            type="radio"
+                            name={`makeup-${index}`}
+                            checked={guest.makeupService === 'women'}
+                            onChange={() => changeMakeup(index, 'women')}
+                          />
+                          <span><strong>{t.womenMakeup}</strong><small>{money(MAKEUP_PRICES.women)}</small></span>
+                        </label>
+                      </fieldset>
+                    ))}
+                  </div>
+                </section>
+                <section className="makeup-selection-section" aria-label={t.shoesTitle}>
+                  <div className="step-title-row">
+                    <div><h3>{t.shoesTitle}</h3></div>
+                  </div>
+                  <div className="makeup-selection-grid">
+                    {guests.map((guest, index) => (
+                      <fieldset className="makeup-selection-card" key={`shoes-${index}`}>
+                        <legend>{t.guest} {index + 1}</legend>
+                        <label className={`makeup-option ${guest.shoes ? 'is-selected' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={guest.shoes}
+                            onChange={(event) => changeShoes(index, event.target.checked)}
+                          />
+                          <span><strong>{t.addShoes}</strong><small>{money(SHOE_RENTAL_PRICE)}</small></span>
+                        </label>
+                      </fieldset>
+                    ))}
+                  </div>
+                </section>
                 {formError && <p className="form-error" role="alert">{formError}</p>}
                 <div className="step-actions step-actions-between">
                   <button className="button button-outline" type="button" onClick={() => { setStep(1); setFormError('') }}>← {t.back}</button>
@@ -1193,14 +1292,13 @@ function App() {
   }
 
   function renderCustomization() {
-    if (!currentBooking?.packageId) return renderHome()
-    const rentalPackage = RENTAL_PACKAGES.find((item) => item.id === currentBooking.packageId)
-    if (!rentalPackage) throw new Error(`Unknown rental package: ${currentBooking.packageId}`)
+    if (!currentBooking?.tierId) return renderHome()
     return (
       <Customization
         language={language}
         text={t}
-        rentalPackage={rentalPackage}
+        tierName={packageName(currentBooking.tierId, language)}
+        bookingTotal={currentBooking.total}
         guests={guests}
         onGuestsChange={setGuests}
         onComplete={completeCustomization}
@@ -1212,8 +1310,8 @@ function App() {
     if (!currentBooking) return renderHome()
     const qrValue = currentBooking.id
     const paid = getPaymentAmounts(currentBooking.total, currentBooking.paymentType)
-    const selectedPackage = currentBooking.packageId
-      ? RENTAL_PACKAGES.find((item) => item.id === currentBooking.packageId)
+    const selectedTier = currentBooking.tierId
+      ? HANBOK_TIERS.find((item) => item.id === currentBooking.tierId)
       : undefined
     return (
       <main className="confirmation-page">
@@ -1227,7 +1325,7 @@ function App() {
             <div><span>{t.summaryTime}</span><strong>{formatTime(currentBooking.startMin)}</strong></div>
             <div><span>{t.summaryDuration}</span><strong>{t.durations[currentBooking.duration].duration}</strong></div>
             <div><span>{t.summaryGuests}</span><strong>{currentBooking.guests.length}</strong></div>
-            {selectedPackage && <div><span>{t.packageLabel}</span><strong>{language === 'ko' ? selectedPackage.nameKo : language === 'zh' ? selectedPackage.nameZh : selectedPackage.nameEn}</strong></div>}
+            {selectedTier && <div><span>{t.packageLabel}</span><strong>{language === 'ko' ? selectedTier.nameKo : language === 'zh' ? selectedTier.nameZh : selectedTier.nameEn}</strong></div>}
             <div><span>{t.serviceLanguage}</span><strong>{currentBooking.contact.serviceLanguage === 'ko' ? '한국어' : currentBooking.contact.serviceLanguage === 'zh' ? '中文' : 'English'}</strong></div>
             <div><span>{t.summaryTotal}</span><strong>{money(currentBooking.total)}</strong></div>
             <div><span>{t.amountPaid}</span><strong>{money(paid.amountDueNow)}</strong></div>
@@ -1239,13 +1337,11 @@ function App() {
                 <strong>{t.guest} {index + 1}</strong>
                 <span>{t.jeogori}: {wardrobeName(JEOGORI_OPTIONS, guest.jeogoriId, language)}</span>
                 <span>{t.chima}: {wardrobeName(CHIMA_OPTIONS, guest.chimaId, language)}</span>
-                {selectedPackage?.includesHairstyling && <span>{t.hairstyle}: {wardrobeName(HAIRSTYLES, guest.hairstyleId, language)}</span>}
-                {selectedPackage?.includesHairAccessories && (
-                  <>
-                    <span>{t.hairAccessories}: {wardrobeName(HAIR_ACCESSORIES, guest.hairAccessoryId, language)}</span>
-                    <span>{t.norigae}: {wardrobeName(NORIGAE_OPTIONS, guest.norigaeId, language)}</span>
-                  </>
-                )}
+                <span>{t.hairstyle}: {wardrobeName(HAIRSTYLES, guest.hairstyleId, language)}</span>
+                {guest.hairAccessoryId && <span>{t.hairAccessories}: {wardrobeName(HAIR_ACCESSORIES, guest.hairAccessoryId, language)}</span>}
+                {guest.norigaeId && <span>{t.norigae}: {wardrobeName(NORIGAE_OPTIONS, guest.norigaeId, language)}</span>}
+                {guest.makeupService && <span>{t.makeupTitle}: {guest.makeupService === 'men' ? t.menMakeup : t.womenMakeup}</span>}
+                {guest.shoes && <span>{t.shoesTitle}: {money(SHOE_RENTAL_PRICE)}</span>}
                 <small>{t.height}: {guest.heightCm ?? '—'} cm · {t.clothingSize}: {guest.clothingSize ?? '—'} · {t.shoeSize}: {guest.shoeSize || '—'} mm</small>
               </article>
             ))}

@@ -3,9 +3,12 @@ import {
   CLOSING_MINUTE,
   JEOGORI_OPTIONS,
   DURATIONS,
+  getBookingTotal,
   getGuestPrice,
   getCompatibleOptions,
   getBookingEndMinute,
+  getMakeupTotal,
+  HANBOK_TIERS,
   getPackageTotal,
   getPaymentAmounts,
   getTimeSlots,
@@ -19,6 +22,8 @@ describe('booking time slots', () => {
   const future = new Date(2030, 0, 1, 8, 0)
 
   it('only offers starts that fit the selected duration within opening hours', () => {
+    expect(DURATIONS.short).toBe(120)
+    expect(DURATIONS.long).toBe(240)
     const short = getTimeSlots('2030-01-02', 'short', 1, [], future)
     const long = getTimeSlots('2030-01-02', 'long', 1, [], future)
     const day = getTimeSlots('2030-01-02', 'day', 1, [], future)
@@ -90,10 +95,11 @@ describe('booking price calculations', () => {
     guest.hanbokId = 'ceremony-heirloom'
     guest.hairstyleId = 'royal-updo'
     guest.makeup = true
+    guest.makeupService = 'women'
     guest.shoes = true
     guest.bag = true
 
-    expect(getGuestPrice(guest)).toBe(50000 + 15000 + 20000 + 15000)
+    expect(getGuestPrice(guest)).toBe(50000 + 15000 + 100000 + 15000)
   })
 
   it('calculates the 20 percent deposit and remaining amount', () => {
@@ -107,10 +113,27 @@ describe('booking price calculations', () => {
     })
   })
 
-  describe('demo packages and wardrobe sizing', () => {
-    it('charges a fixed sample package price per guest', () => {
-      expect(getPackageTotal('styled', 2)).toBe(130000)
-      expect(getPackageTotal('complete', 1)).toBe(100000)
+  describe('Hanbok tiers and wardrobe sizing', () => {
+    it('uses the supplied per-guest rates for every duration', () => {
+      expect(HANBOK_TIERS.map((tier) => tier.prices)).toEqual([
+        { short: 20000, long: 30000, day: 60000 },
+        { short: 30000, long: 40000, day: 70000 },
+        { short: 40000, long: 50000, day: 80000 },
+      ])
+      expect(getPackageTotal('premium', 'short', 2)).toBe(60000)
+      expect(getPackageTotal('luxury', 'day', 1)).toBe(80000)
+    })
+
+    it('adds each guest’s optional makeup fee to the Hanbok rental total', () => {
+      const guests = [createGuestSelection(), createGuestSelection()]
+      guests[0].makeup = true
+      guests[0].makeupService = 'men'
+      guests[1].makeup = true
+      guests[1].makeupService = 'women'
+      guests[0].shoes = true
+
+      expect(getMakeupTotal(guests)).toBe(170000)
+      expect(getBookingTotal('special', 'long', guests)).toBe(245000)
     })
 
     it('filters sample Jeogori options by clothing size', () => {
@@ -137,9 +160,31 @@ describe('booking price calculations', () => {
           bag: false,
         }],
         contact: { name: 'Guest', phone: '+821012345678', email: 'guest@example.com' },
+        packageId: 'complete',
         paymentType: 'full',
         total: 20000,
         amountPaid: 20000,
+        createdAt: '2030-01-01T00:00:00.000Z',
+      })).toBe(true)
+    })
+
+    it('accepts new tier and makeup fields in saved bookings', () => {
+      expect(isBookingRecord({
+        id: 'HG-NEW',
+        date: '2030-01-02',
+        startMin: 540,
+        endMin: 660,
+        duration: 'short',
+        guests: [{
+          ...createGuestSelection(),
+          makeup: true,
+          makeupService: 'men',
+        }],
+        contact: { name: 'Guest', phone: '+821012345678', email: 'guest@example.com' },
+        tierId: 'special',
+        paymentType: 'full',
+        total: 90000,
+        amountPaid: 90000,
         createdAt: '2030-01-01T00:00:00.000Z',
       })).toBe(true)
     })

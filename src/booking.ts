@@ -1,5 +1,7 @@
 export type DurationKey = 'short' | 'long' | 'day'
-export type PackageId = 'essential' | 'styled' | 'complete'
+export type PackageId = 'special' | 'premium' | 'luxury'
+export type LegacyPackageId = 'essential' | 'styled' | 'complete'
+export type MakeupService = 'men' | 'women'
 export type ServiceLanguage = 'en' | 'ko' | 'zh'
 export type ClothingSize = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'
 export type ColorPalette = 'warm' | 'cool' | 'neutral'
@@ -13,6 +15,7 @@ export type GuestSelection = {
   hanbokId: string
   hairstyleId: string
   makeup: boolean
+  makeupService?: MakeupService
   shoes: boolean
   shoeSize: string
   bag: boolean
@@ -42,7 +45,8 @@ export type BookingRecord = {
   duration: DurationKey
   guests: GuestSelection[]
   contact: ContactDetails
-  packageId?: PackageId
+  tierId?: PackageId
+  packageId?: LegacyPackageId
   paymentType: 'full' | 'deposit'
   total: number
   amountPaid: number
@@ -64,7 +68,7 @@ export type HairstyleOption = WardrobeOption & {
   imageUrl?: string
 }
 
-export type RentalPackage = {
+export type HanbokTier = {
   id: PackageId
   nameEn: string
   nameKo: string
@@ -72,11 +76,7 @@ export type RentalPackage = {
   descriptionEn: string
   descriptionKo: string
   descriptionZh: string
-  price: number
-  includesHairstyling: boolean
-  includesHairAccessories: boolean
-  includesMakeup: boolean
-  includesShoes: boolean
+  prices: Record<DurationKey, number>
 }
 
 export type WardrobeOption = {
@@ -96,9 +96,14 @@ export const CLOSING_MINUTE = 19 * 60
 export const BOOKING_STORAGE_KEY = 'hanbokgirls-demo-bookings'
 
 export const DURATIONS: Record<Exclude<DurationKey, 'day'>, number> = {
-  short: 90,
-  long: 180,
+  short: 120,
+  long: 240,
 }
+export const MAKEUP_PRICES: Record<MakeupService, number> = {
+  men: 70000,
+  women: 100000,
+}
+export const SHOE_RENTAL_PRICE = 15000
 
 const ALL_CLOTHING_SIZES: readonly ClothingSize[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 
@@ -122,48 +127,36 @@ export const HAIRSTYLES: HairstyleOption[] = [
   { id: 'royal-updo', nameEn: 'Royal updo', nameKo: '왕실 업스타일', nameZh: '宫廷盘发', price: 15000, color: '#d2ad71', palette: 'neutral', sizes: ALL_CLOTHING_SIZES },
 ]
 
-export const RENTAL_PACKAGES: RentalPackage[] = [
+export const HANBOK_TIERS: HanbokTier[] = [
   {
-    id: 'essential',
-    nameEn: 'Essential Hanbok',
-    nameKo: '한복 에센셜',
-    nameZh: '韩服基础套餐',
-    descriptionEn: 'Hanbok rental, outfit choices, and a keepsake bag.',
-    descriptionKo: '한복 대여, 의상 선택, 기념 가방이 포함돼요.',
-    descriptionZh: '包含韩服租赁、服装选择和纪念手提袋。',
-    price: 50000,
-    includesHairstyling: false,
-    includesHairAccessories: false,
-    includesMakeup: false,
-    includesShoes: false,
+    id: 'special',
+    nameEn: 'Special Hanbok',
+    nameKo: '스페셜 한복',
+    nameZh: '特别韩服',
+    descriptionEn: 'A charming Hanbok rental for your Seoul day.',
+    descriptionKo: '서울에서의 하루를 위한 특별한 한복 대여예요.',
+    descriptionZh: '为您的首尔之旅准备的特别韩服租赁。',
+    prices: { short: 20000, long: 30000, day: 60000 },
   },
   {
-    id: 'styled',
-    nameEn: 'Signature Styling',
-    nameKo: '시그니처 스타일링',
-    nameZh: '特色造型套餐',
-    descriptionEn: 'Essential Hanbok plus hairstyling, a hair accessory, and Norigae.',
-    descriptionKo: '에센셜 한복에 헤어 스타일링, 머리 장식, 노리개가 더해져요.',
-    descriptionZh: '基础套餐另含发型设计、发饰和韩服挂饰。',
-    price: 65000,
-    includesHairstyling: true,
-    includesHairAccessories: true,
-    includesMakeup: false,
-    includesShoes: false,
+    id: 'premium',
+    nameEn: 'Premium Hanbok',
+    nameKo: '프리미엄 한복',
+    nameZh: '高级韩服',
+    descriptionEn: 'A refined Hanbok rental with elevated details.',
+    descriptionKo: '한층 더 섬세한 디테일을 갖춘 한복 대여예요.',
+    descriptionZh: '细节更精致的韩服租赁体验。',
+    prices: { short: 30000, long: 40000, day: 70000 },
   },
   {
-    id: 'complete',
-    nameEn: 'Complete Experience',
-    nameKo: '컴플리트 체험',
-    nameZh: '完整体验套餐',
-    descriptionEn: 'Signature Styling plus makeup and shoes.',
-    descriptionKo: '시그니처 스타일링에 메이크업과 신발이 포함돼요.',
-    descriptionZh: '特色造型套餐另含妆容和鞋子。',
-    price: 100000,
-    includesHairstyling: true,
-    includesHairAccessories: true,
-    includesMakeup: true,
-    includesShoes: true,
+    id: 'luxury',
+    nameEn: 'Luxury Hanbok',
+    nameKo: '럭셔리 한복',
+    nameZh: '奢华韩服',
+    descriptionEn: 'An elegant Hanbok rental for a special occasion.',
+    descriptionKo: '특별한 날을 위한 우아한 한복 대여예요.',
+    descriptionZh: '适合特别场合的优雅韩服租赁。',
+    prices: { short: 40000, long: 50000, day: 80000 },
   },
 ]
 
@@ -206,8 +199,6 @@ export function createGuestSelection(): GuestSelection {
     bag: false,
     jeogoriId: JEOGORI_OPTIONS[0].id,
     chimaId: CHIMA_OPTIONS[0].id,
-    hairAccessoryId: HAIR_ACCESSORIES[0].id,
-    norigaeId: NORIGAE_OPTIONS[0].id,
   }
 }
 
@@ -283,18 +274,38 @@ export function getGuestPrice(guest: GuestSelection): number {
   return (
     (hanbok?.price ?? 0) +
     (hairstyle?.price ?? 0) +
-    (guest.makeup ? 20000 : 0) +
-    (guest.shoes ? 15000 : 0)
+    (guest.makeupService ? MAKEUP_PRICES[guest.makeupService] : 0) +
+    (guest.shoes ? SHOE_RENTAL_PRICE : 0)
   )
 }
 
-export function getPackageTotal(packageId: PackageId, guestCount: number): number {
-  const rentalPackage = RENTAL_PACKAGES.find((option) => option.id === packageId)
-  if (!rentalPackage) throw new Error(`Unknown rental package: ${packageId}`)
+export function getPackageTotal(
+  tierId: PackageId,
+  duration: DurationKey,
+  guestCount: number,
+): number {
+  const tier = HANBOK_TIERS.find((option) => option.id === tierId)
+  if (!tier) throw new Error(`Unknown Hanbok tier: ${tierId}`)
   if (!Number.isInteger(guestCount) || guestCount < 1) {
     throw new Error('Guest count must be a positive integer')
   }
-  return rentalPackage.price * guestCount
+  return tier.prices[duration] * guestCount
+}
+
+export function getMakeupTotal(guests: readonly GuestSelection[]): number {
+  return guests.reduce(
+    (total, guest) => total + (guest.makeupService ? MAKEUP_PRICES[guest.makeupService] : 0),
+    0,
+  )
+}
+
+export function getBookingTotal(
+  tierId: PackageId,
+  duration: DurationKey,
+  guests: readonly GuestSelection[],
+): number {
+  const shoeTotal = guests.filter((guest) => guest.shoes).length * SHOE_RENTAL_PRICE
+  return getPackageTotal(tierId, duration, guests.length) + getMakeupTotal(guests) + shoeTotal
 }
 
 export function getCompatibleOptions<T extends WardrobeOption>(
@@ -336,6 +347,11 @@ export function isBookingRecord(value: unknown): value is BookingRecord {
     booking.packageId === 'essential' ||
     booking.packageId === 'styled' ||
     booking.packageId === 'complete'
+  const validOptionalTier =
+    booking.tierId === undefined ||
+    booking.tierId === 'special' ||
+    booking.tierId === 'premium' ||
+    booking.tierId === 'luxury'
   return (
     typeof booking.id === 'string' &&
     typeof booking.date === 'string' &&
@@ -352,6 +368,7 @@ export function isBookingRecord(value: unknown): value is BookingRecord {
     booking.guests.every(isGuestSelection) &&
     validOptionalContact &&
     validOptionalPackage &&
+    validOptionalTier &&
     typeof booking.total === 'number' &&
     Number.isFinite(booking.total) &&
     typeof booking.amountPaid === 'number' &&
@@ -368,6 +385,9 @@ function isGuestSelection(value: unknown): value is GuestSelection {
     typeof guest.hanbokId === 'string' &&
     typeof guest.hairstyleId === 'string' &&
     typeof guest.makeup === 'boolean' &&
+    (guest.makeupService === undefined ||
+      guest.makeupService === 'men' ||
+      guest.makeupService === 'women') &&
     typeof guest.shoes === 'boolean' &&
     typeof guest.shoeSize === 'string' &&
     typeof guest.bag === 'boolean' &&

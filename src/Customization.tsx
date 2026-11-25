@@ -13,7 +13,6 @@ import {
   type ColorPalette,
   type ClothingSize,
   type GuestSelection,
-  type RentalPackage,
   type ServiceLanguage,
   type WardrobeOption,
 } from './booking'
@@ -56,9 +55,9 @@ type CustomizationText = {
   norigae: string
   preview: string
   included: string
+  noneOption: string
   recommended: string
   photoComing: string
-  packageLocked: string
   reviewTitle: string
   reviewHint: string
   packageLabel: string
@@ -67,12 +66,14 @@ type CustomizationText = {
   continue: string
   back: string
   finishCustomization: string
+  summaryTotal: string
 }
 
 type CustomizationProps = {
   language: ServiceLanguage
   text: CustomizationText
-  rentalPackage: RentalPackage
+  tierName: string
+  bookingTotal: number
   guests: GuestSelection[]
   onGuestsChange: (guests: GuestSelection[]) => void
   onComplete: (guests: GuestSelection[]) => boolean
@@ -90,12 +91,6 @@ function optionName(
   if (language === 'ko') return option.nameKo
   if (language === 'zh') return option.nameZh
   return option.nameEn
-}
-
-function packageName(rentalPackage: RentalPackage, language: ServiceLanguage): string {
-  if (language === 'ko') return rentalPackage.nameKo
-  if (language === 'zh') return rentalPackage.nameZh
-  return rentalPackage.nameEn
 }
 
 function money(amount: number): string {
@@ -128,6 +123,8 @@ function OptionGallery({
   palette,
   language,
   text,
+  allowNone = false,
+  noneLabel,
   onSelect,
 }: {
   options: readonly WardrobeOption[]
@@ -135,10 +132,23 @@ function OptionGallery({
   palette?: ColorPalette
   language: ServiceLanguage
   text: CustomizationText
-  onSelect: (id: string) => void
+  allowNone?: boolean
+  noneLabel?: string
+  onSelect: (id: string | undefined) => void
 }) {
   return (
     <div className="look-option-gallery">
+      {allowNone && (
+        <button
+          className={`look-option look-option-none-card ${selectedId === undefined ? 'is-selected' : ''}`}
+          type="button"
+          aria-pressed={selectedId === undefined}
+          onClick={() => onSelect(undefined)}
+        >
+          <span className="look-option-media"><span className="look-option-none" aria-hidden="true">—</span></span>
+          <span className="look-option-copy"><strong>{noneLabel ?? text.noneOption}</strong></span>
+        </button>
+      )}
       {prioritizePalette(options, palette).map((option) => {
         const selected = selectedId === option.id
         const recommended = palette === option.palette
@@ -174,26 +184,21 @@ function OptionGallery({
 
 function OutfitPreview({
   guest,
-  packageInfo,
   text,
-  language,
 }: {
   guest: GuestSelection
-  packageInfo: RentalPackage
   text: CustomizationText
-  language: ServiceLanguage
 }) {
   const top = JEOGORI_OPTIONS.find((option) => option.id === guest.jeogoriId) ?? JEOGORI_OPTIONS[0]
   const skirt = CHIMA_OPTIONS.find((option) => option.id === guest.chimaId) ?? CHIMA_OPTIONS[0]
   const hair = HAIRSTYLES.find((option) => option.id === guest.hairstyleId) ?? HAIRSTYLES[0]
-  const hairAccessory =
-    HAIR_ACCESSORIES.find((option) => option.id === guest.hairAccessoryId) ?? HAIR_ACCESSORIES[0]
-  const norigae = NORIGAE_OPTIONS.find((option) => option.id === guest.norigaeId) ?? NORIGAE_OPTIONS[0]
+  const hairAccessory = HAIR_ACCESSORIES.find((option) => option.id === guest.hairAccessoryId)
+  const norigae = NORIGAE_OPTIONS.find((option) => option.id === guest.norigaeId)
 
   return (
     <div className="outfit-preview">
       <p className="eyebrow">{text.preview}</p>
-      <svg viewBox="0 0 220 310" role="img" aria-label={`${text.preview}: ${packageName(packageInfo, language)}`}>
+      <svg viewBox="0 0 220 310" role="img" aria-label={text.preview}>
         <ellipse cx="110" cy="292" rx="72" ry="10" fill="#e9e1d7" />
         <path d="M91 46c-6-29 9-39 21-39 20 0 29 18 21 43l-8 12H97z" fill="#40312f" />
         <circle cx="110" cy="43" r="22" fill="#f1cbb1" />
@@ -203,15 +208,9 @@ function OutfitPreview({
         <path d="M102 72l8 20 8-20 11 8-16 20-16-20z" fill="#fff8eb" stroke="#765c58" strokeWidth="1.5" />
         <path d="M91 146h38l39 123c-30 24-86 24-116 0z" fill={skirt.color} stroke="#765c58" strokeWidth="2" />
         <path d="M110 101v82" stroke="#fff4dd" strokeWidth="3" />
-        {packageInfo.includesHairAccessories && (
-          <circle cx="128" cy="27" r="6" fill={hairAccessory.color} stroke="#765c58" strokeWidth="2" />
-        )}
-        {packageInfo.includesHairAccessories && (
-          <path d="M126 152c12 5 15 15 8 24-7 7-14 3-13-4 1-7 7-9 5-20z" fill={norigae.color} stroke="#765c58" strokeWidth="1.5" />
-        )}
-        {packageInfo.includesHairstyling && (
-          <path d="M85 34c-6 10-4 21 3 26" fill="none" stroke={hair.color} strokeWidth="5" strokeLinecap="round" />
-        )}
+        {hairAccessory && <circle cx="128" cy="27" r="6" fill={hairAccessory.color} stroke="#765c58" strokeWidth="2" />}
+        {norigae && <path d="M126 152c12 5 15 15 8 24-7 7-14 3-13-4 1-7 7-9 5-20z" fill={norigae.color} stroke="#765c58" strokeWidth="1.5" />}
+        <path d="M85 34c-6 10-4 21 3 26" fill="none" stroke={hair.color} strokeWidth="5" strokeLinecap="round" />
       </svg>
     </div>
   )
@@ -220,7 +219,8 @@ function OutfitPreview({
 export default function Customization({
   language,
   text,
-  rentalPackage,
+  tierName,
+  bookingTotal,
   guests,
   onGuestsChange,
   onComplete,
@@ -284,7 +284,7 @@ export default function Customization({
         guest.heightCm >= 80 &&
         guest.heightCm <= 230 &&
         !!guest.clothingSize &&
-        !!guest.shoeSize,
+        (!guest.shoes || !!guest.shoeSize),
     )
     if (!complete) {
       setError(text.measurementsError)
@@ -359,7 +359,7 @@ export default function Customization({
                     </label>
                     <label className="form-field">
                       <span>{text.shoeSize}</span>
-                      <select value={guest.shoeSize} onChange={(event) => update(index, { shoeSize: event.target.value })} required>
+                      <select value={guest.shoeSize} onChange={(event) => update(index, { shoeSize: event.target.value })} required={guest.shoes} disabled={!guest.shoes}>
                         <option value="">—</option>
                         {SHOE_SIZES.map((size) => <option value={size} key={size}>{size} mm</option>)}
                       </select>
@@ -488,21 +488,19 @@ export default function Customization({
             <h2>{text.wardrobeTitle}</h2>
             <p>{text.wardrobeHint}</p>
             <p className="wardrobe-package-summary">
-              {text.packageLabel}: {packageName(rentalPackage, language)} · {money(rentalPackage.price * guests.length)}
+              {text.packageLabel}: {tierName} · {text.summaryTotal}: {money(bookingTotal)}
             </p>
             <div className="guest-style-list">
               {guests.map((guest, index) => {
                 const size = clothingSize(guest)
                 const tops = getCompatibleOptions(JEOGORI_OPTIONS, size)
                 const skirts = getCompatibleOptions(CHIMA_OPTIONS, size)
-                const hairstyles = rentalPackage.includesHairstyling
-                  ? getCompatibleOptions(HAIRSTYLES, size)
-                  : HAIRSTYLES.filter((style) => style.id === 'natural')
+                const hairstyles = getCompatibleOptions(HAIRSTYLES, size)
                 return (
                   <article className="guest-style-card wardrobe-guest" key={`wardrobe-${index}`}>
                     <div className="guest-style-heading"><span className="guest-badge">{String(index + 1).padStart(2, '0')}</span><h3>{text.guest} {index + 1}</h3></div>
                     <div className="outfit-layout">
-                      <OutfitPreview guest={guest} packageInfo={rentalPackage} text={text} language={language} />
+                      <OutfitPreview guest={guest} text={text} />
                       <div className="wardrobe-choices">
                         <fieldset className="look-gallery-fieldset">
                           <legend>{text.jeogori} · {size}</legend>
@@ -516,20 +514,14 @@ export default function Customization({
                           <legend>{text.hairstyle}</legend>
                           <OptionGallery options={hairstyles} selectedId={guest.hairstyleId} palette={guest.colorPalette} language={language} text={text} onSelect={(id) => update(index, { hairstyleId: id })} />
                         </fieldset>
-                        {rentalPackage.includesHairAccessories ? (
-                          <>
-                            <fieldset className="look-gallery-fieldset">
-                              <legend>{text.hairAccessories}</legend>
-                              <OptionGallery options={HAIR_ACCESSORIES} selectedId={guest.hairAccessoryId} palette={guest.colorPalette} language={language} text={text} onSelect={(id) => update(index, { hairAccessoryId: id })} />
-                            </fieldset>
-                            <fieldset className="look-gallery-fieldset">
-                              <legend>{text.norigae}</legend>
-                              <OptionGallery options={NORIGAE_OPTIONS} selectedId={guest.norigaeId} palette={guest.colorPalette} language={language} text={text} onSelect={(id) => update(index, { norigaeId: id })} />
-                            </fieldset>
-                          </>
-                        ) : (
-                          <p className="package-note">{text.packageLocked}</p>
-                        )}
+                        <fieldset className="look-gallery-fieldset">
+                          <legend>{text.hairAccessories}</legend>
+                          <OptionGallery options={HAIR_ACCESSORIES} selectedId={guest.hairAccessoryId} palette={guest.colorPalette} language={language} text={text} allowNone onSelect={(id) => update(index, { hairAccessoryId: id })} />
+                        </fieldset>
+                        <fieldset className="look-gallery-fieldset">
+                          <legend>{text.norigae}</legend>
+                          <OptionGallery options={NORIGAE_OPTIONS} selectedId={guest.norigaeId} palette={guest.colorPalette} language={language} text={text} allowNone onSelect={(id) => update(index, { norigaeId: id })} />
+                        </fieldset>
                       </div>
                     </div>
                   </article>
@@ -551,7 +543,7 @@ export default function Customization({
               {guests.map((guest, index) => (
                 <article className="review-look" key={`review-${index}`}>
                   <div className="guest-style-heading"><span className="guest-badge">{String(index + 1).padStart(2, '0')}</span><h3>{text.guest} {index + 1}</h3></div>
-                  <OutfitPreview guest={guest} packageInfo={rentalPackage} text={text} language={language} />
+                  <OutfitPreview guest={guest} text={text} />
                   <p>{text.height}: {guest.heightCm} cm · {text.clothingSize}: {guest.clothingSize} · {text.shoeSize}: {guest.shoeSize} mm</p>
                 </article>
               ))}

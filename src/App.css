@@ -1163,6 +1163,15 @@
   padding: 6px 8px;
 }
 
+.look-option-none-card .look-option-media {
+  background: linear-gradient(145deg, #f8f6f1, #e9e3da);
+}
+
+.look-option-none {
+  color: var(--muted);
+  font-size: 24px;
+}
+
 .look-option-media {
   align-items: center;
   aspect-ratio: 4 / 3;
@@ -1262,23 +1271,117 @@
   font-size: 18px;
 }
 
-.package-card-price {
-  color: var(--ink);
-  font-size: 16px;
+.package-card-price-list {
+  display: grid;
+  gap: 5px;
+}
+
+.package-card-price-list > span {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 11px;
+  justify-content: space-between;
+  padding: 3px 6px;
+}
+
+.package-card-price-list > span.is-current-duration {
+  background: #f7f1f3;
+  color: var(--plum);
+}
+
+.package-card-price-list small {
+  font-size: 10px;
+}
+
+.package-card-current-price {
+  color: var(--plum);
+  font-size: 12px;
   font-weight: 700;
 }
 
-.package-card-price small,
-.package-card-description,
-.package-card-inclusions {
+.package-card-current-price small,
+.package-card-description {
   color: var(--muted);
   font-size: 10px;
   font-weight: 400;
   line-height: 1.6;
 }
 
-.package-card-inclusions b {
+.makeup-selection-section {
+  margin-top: 26px;
+}
+
+.makeup-selection-section h3 {
   color: var(--ink);
+  font-family: var(--serif);
+  font-size: 19px;
+  margin: 0 0 5px;
+}
+
+.makeup-selection-section p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+.makeup-selection-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  margin-top: 12px;
+}
+
+.makeup-selection-card {
+  border: 1px solid #e8e2d9;
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.makeup-selection-card legend {
+  color: var(--plum);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 5px;
+}
+
+.makeup-option {
+  align-items: center;
+  background: #fbf9f4;
+  border: 1px solid #eee8df;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 9px;
+}
+
+.makeup-option.is-selected {
+  background: #f7f1f3;
+  border-color: var(--plum);
+}
+
+.makeup-option input {
+  accent-color: var(--plum);
+}
+
+.makeup-option span {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.makeup-option strong {
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.makeup-option small {
+  color: var(--muted);
+  font-size: 10px;
 }
 
 .consent-option {
