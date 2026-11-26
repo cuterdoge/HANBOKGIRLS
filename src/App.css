@@ -1153,23 +1153,6 @@
   box-shadow: 0 0 0 1px var(--plum);
 }
 
-.look-option-natural {
-  flex-direction: row;
-  min-height: 52px;
-}
-
-.look-option-natural .look-option-media {
-  aspect-ratio: auto;
-  flex: 0 0 52px;
-  height: 52px;
-  width: 52px;
-}
-
-.look-option-natural .look-option-copy {
-  align-self: center;
-  padding: 6px 8px;
-}
-
 .look-option-none-card .look-option-media {
   background: linear-gradient(145deg, #f8f6f1, #e9e3da);
 }

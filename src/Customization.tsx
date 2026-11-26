@@ -154,7 +154,7 @@ function OptionGallery({
         const recommended = palette === option.palette
         return (
           <button
-            className={`look-option ${selected ? 'is-selected' : ''} ${option.id === 'natural' ? 'look-option-natural' : ''}`}
+            className={`look-option ${selected ? 'is-selected' : ''}`}
             type="button"
             key={option.id}
             aria-pressed={selected}
