@@ -925,19 +925,12 @@ function App() {
                 <span>서울</span><small>SEOUL<br />WITH LOVE</small>
               </div>
             </div>
-            <div className="hero-art" aria-label="Hanbok photo placeholder">
+            <div className="hero-art">
               <div className="photo-frame photo-frame-main">
-                <div className="photo-placeholder">
-                  <span className="placeholder-mark">✿</span>
-                  <span>HANBOK<br />MOMENTS</span>
-                  <small>YOUR PHOTO HERE</small>
-                </div>
+                <img src="/images/home-hanbok.png" alt="Two guests wearing hanbok" />
               </div>
               <div className="photo-frame photo-frame-small">
-                <div className="photo-placeholder photo-placeholder-sage">
-                  <span>STYLE<br />YOUR DAY</span>
-                  <small>YOUR PHOTO HERE</small>
-                </div>
+                <img src="/images/home-styling.png" alt="Portrait beside cherry blossoms" />
               </div>
               <div className="art-flower art-flower-one">✿</div>
               <div className="art-flower art-flower-two">✽</div>

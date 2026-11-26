@@ -121,10 +121,10 @@ export const HANBOK_OPTIONS: HanbokOption[] = [
 ] as const
 
 export const HAIRSTYLES: HairstyleOption[] = [
-  { id: 'natural', nameEn: 'Natural hair', nameKo: '자연스러운 헤어', nameZh: '自然发型', price: 0, color: '#d8c3ad', palette: 'neutral', sizes: ALL_CLOTHING_SIZES },
-  { id: 'soft-bun', nameEn: 'Soft bun', nameKo: '단아한 쪽머리', nameZh: '优雅发髻', price: 5000, color: '#c9b29b', palette: 'warm', sizes: ALL_CLOTHING_SIZES },
-  { id: 'braided', nameEn: 'Braided accent', nameKo: '땋은 머리 장식', nameZh: '编发造型', price: 10000, color: '#b88767', palette: 'warm', sizes: ALL_CLOTHING_SIZES },
-  { id: 'royal-updo', nameEn: 'Royal updo', nameKo: '왕실 업스타일', nameZh: '宫廷盘发', price: 15000, color: '#d2ad71', palette: 'neutral', sizes: ALL_CLOTHING_SIZES },
+  { id: 'natural', nameEn: 'Natural hair', nameKo: '자연스러운 헤어', nameZh: '自然发型', price: 0, color: '#d8c3ad', palette: 'neutral', sizes: ALL_CLOTHING_SIZES, imageUrl: '/images/natural.jpg' },
+  { id: 'soft-bun', nameEn: 'Soft bun', nameKo: '단아한 쪽머리', nameZh: '优雅发髻', price: 5000, color: '#c9b29b', palette: 'warm', sizes: ALL_CLOTHING_SIZES, imageUrl: '/images/soft-bun.jpg' },
+  { id: 'braided', nameEn: 'Braided accent', nameKo: '땋은 머리 장식', nameZh: '编发造型', price: 10000, color: '#b88767', palette: 'warm', sizes: ALL_CLOTHING_SIZES, imageUrl: '/images/braided.png' },
+  { id: 'royal-updo', nameEn: 'Royal updo', nameKo: '왕실 업스타일', nameZh: '宫廷盘发', price: 15000, color: '#d2ad71', palette: 'neutral', sizes: ALL_CLOTHING_SIZES, imageUrl: '/images/royal-updo.jpg' },
 ]
 
 export const HANBOK_TIERS: HanbokTier[] = [
